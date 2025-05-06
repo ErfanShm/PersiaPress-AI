@@ -26,7 +26,7 @@ def initialize_llm_clients():
     llm_image_prompt = None
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
     AVALAI_BASE_URL = "https://api.avalai.ir/v1"
-    BLOG_MODEL_NAME = "gemini-2.5-pro-exp-03-25"
+    BLOG_MODEL_NAME = "gemini-2.5-pro-preview-03-25"
     IMAGE_PROMPT_MODEL_NAME = "gpt-4.1"
     TIMEOUT = 90
 
@@ -67,6 +67,7 @@ def create_draft_post(title: str,
                       tag_names: list[str] | None = None, # Accept tag names
                       primary_focus_keyword: str | None = None, # Add primary keyword
                       secondary_focus_keyword: str | None = None, # Add secondary keyword
+                      additional_focus_keywords: list[str] | None = None, # Add additional keywords
                       seo_title: str | None = None,           # Add SEO Title
                       seo_description: str | None = None,   # Add SEO Description
                       image_path: str | None = None,        # Add local image path
@@ -90,6 +91,7 @@ def create_draft_post(title: str,
         tag_names (list[str] | None, optional): List of tag names to assign/create.
         primary_focus_keyword (str | None, optional): The primary Rank Math focus keyword.
         secondary_focus_keyword (str | None, optional): The secondary Rank Math focus keyword.
+        additional_focus_keywords (list[str] | None, optional): List of additional Rank Math focus keywords.
         seo_title (str | None, optional): The SEO title for Rank Math.
         seo_description (str | None, optional): The SEO description for Rank Math.
         image_path (str | None, optional): The absolute path to the local image file to upload.
@@ -220,13 +222,15 @@ def create_draft_post(title: str,
         return {"success": False, "error": error_msg}
 
     # --- Step 2: Update Rank Math Fields via Custom Endpoint (if applicable) --- 
-    focus_keywords_to_send = None
+    keywords_list = []
     if primary_focus_keyword:
-        focus_keywords_to_send = primary_focus_keyword
-        if secondary_focus_keyword: # Append secondary if both exist
-            focus_keywords_to_send += f",{secondary_focus_keyword}"
-    elif secondary_focus_keyword: # Handle case where only secondary is provided
-         focus_keywords_to_send = secondary_focus_keyword
+        keywords_list.append(primary_focus_keyword)
+    if secondary_focus_keyword:
+        keywords_list.append(secondary_focus_keyword)
+    if additional_focus_keywords and isinstance(additional_focus_keywords, list):
+        keywords_list.extend([kw for kw in additional_focus_keywords if isinstance(kw, str) and kw]) # Add valid additional keywords
+    
+    focus_keywords_to_send = ",".join(keywords_list) if keywords_list else None
 
     # Determine if any Rank Math update is needed
     meta_update_needed = bool(focus_keywords_to_send or seo_title or seo_description)
@@ -384,12 +388,13 @@ Analyze: Thoroughly review the content of the provided article title and body be
 # Focus Keywords (Generate First)
 Focus Keywords (کلمات کلیدی کانونی):
 
-Generate **one primary focus keyword** and **one secondary focus keyword** in Persian based on the source title and body.
-*   The **primary keyword** is the absolute most important term.
-*   The **secondary keyword** is the next most important related term.
-*   You can mix Persian and English terms within each keyword if it represents a common search phrase or technical concept (e.g., 'راهکارهای یادگیری AI').
+Generate **up to four relevant focus keywords** in Persian based on the source title and body. Define their roles and target presence:
+*   **Primary Keyword (کلمه کلیدی اصلی):** Generate **one primary focus keyword**. This is the absolute most important term, directly representing the core topic. Target density: ~1%. Provide this for the `primary_focus_keyword` key.
+*   **Secondary Keyword (کلمه کلیدی ثانویه):** Generate **one secondary focus keyword**. This is the next most important related term, often targeting a key sub-topic or closely related concept. Target density: ~0.5%. Provide this for the `secondary_focus_keyword` key.
+*   **Additional Keywords (کلمات کلیدی اضافی):** Generate **up to two additional focus keywords**. These should target important LSI (Latent Semantic Indexing) terms, synonyms, or related concepts that broaden the article's reach. Target density: ~0.25% each. Provide these as a list of strings for the `additional_focus_keywords` key.
+*   **General:** You can mix Persian and English terms within each keyword if it represents a common search phrase or technical concept (e.g., 'راهکارهای یادگیری AI'). Total combined density should be around 1.5-2.0%, integrated naturally. **Avoid keyword stuffing.**
+
 These keywords will be used to optimize other elements.
-Provide the primary keyword for the `primary_focus_keyword` key and the secondary for the `secondary_focus_keyword` key in the final JSON.
 
 Title (عنوان):
 
@@ -432,7 +437,10 @@ Content Generation:
     *   **Crucially, include the exact `primary_focus_keyword` within the first 10% of the main content body (after the intro).**
     *   **Incorporate both the `primary_focus_keyword` and `secondary_focus_keyword` naturally into `##` (H2) and `###` (H3) headings.**
     *   Maintain a **natural keyword density** for *both* focus keywords throughout the content, aiming for approximately 1-1.5% density *combined*, prioritizing the primary keyword slightly more. **Avoid keyword stuffing.**
-*   **Body:** Write a comprehensive, *unique* Persian blog post that summarizes, explains, and potentially *adds value beyond* the key information from the source body. **Target a minimum word count of 600 words, aiming for longer comprehensive content where appropriate.** Ensure the content is unique and is not just a rehash or direct translation.
+*   **Body:** Write a comprehensive, *unique* Persian blog post that summarizes, explains, and potentially *adds value beyond* the key information from the source body. 
+    *   **Strictly avoid copying sentences or significant phrases** from the source body. Focus on synthesizing information and expressing it in **completely original wording**.
+    *   When instructed to **'add value beyond'** the source, this means incorporating elements like: **original analysis, unique examples relevant to the Persian audience, connections to recent local events or trends (if applicable), or a concluding thought/opinion.**
+    *   **Target a minimum word count of 600 words, aiming for longer comprehensive content where appropriate.** Ensure the content is unique and is not just a rehash or direct translation.
 *   **Structure & Readability:** 
     *   Structure the content beautifully using Markdown. Make it visually appealing and easy to scan. Use Markdown elements like bullet points (`* point`), numbered lists (`1. point`), bold text (`**important term**`).
     *   Use appropriate Markdown for headings (e.g., `##` for H2 headings, `###` for H3 headings).
@@ -440,6 +448,12 @@ Content Generation:
     *   Add at least one unique insight or perspective (e.g., a practical tip, a local context, or a forward-looking question).
     *   **Suggest Media:** Where appropriate, insert placeholders like `[پیشنهاد تصویر: توضیح تصویر مورد نیاز در اینجا]` or `[پیشنهاد ویدیو: توضیح ویدیوی مورد نیاز در اینجا]` to guide manual media insertion later.
 *   **Handling English Terms:** Within the body text, follow the same principle as for the title: keep essential English terms directly, or if translating, follow with the English term in parentheses `()` (e.g., `یادگیری ماشین (Machine Learning)`).
+*   **Quote Handling & Attribution:** When including a direct quote:
+    *   Format the quote distinctly, for example using Persian quotation marks (`«نقل قول»`).
+    *   **Crucially, provide clear attribution.** Identify the speaker/author and their relevant title or role.
+    *   Specify the context: where or when the quote originated (e.g., a specific event, publication, year).
+    *   If a reliable online source for the quote exists (e.g., an official transcript, article, or interview), attempt to find and include a Markdown link `[منبع نقل قول](URL)` immediately after the attribution.
+    *   Attribute using an em dash (`—`) before the source information on a new line below the quote.
 *   **Linking (External):** 
     *   **Goal:** Enhance credibility and provide value by linking externally to high-quality, authoritative sources.
     *   **What to Link:** Identify opportunities to link key **English terms, brand names (like OpenAI, Google Gemini), specific data points, technical concepts, or cited studies/sources** to their official/authoritative URLs.
@@ -485,6 +499,7 @@ Provide the entire output strictly as a **single JSON object**. Do **NOT** inclu
 
 *   `"primary_focus_keyword"`: [Generated single Persian Primary Focus Keyword String]
 *   `"secondary_focus_keyword"`: [Generated single Persian Secondary Focus Keyword String]
+*   `"additional_focus_keywords"`: [Array of **up to 2** additional Persian Focus Keyword Strings, or empty array `[]` if none generated]
 *   `"title"`: [Generated Persian Title String for H1, optimized as per instructions]
 *   `"seo_title"`: [Generated Persian SEO Title String for Rank Math (<60 chars), optimized as per instructions]
 *   `"slug"`: [Generated English Slug String]
@@ -523,16 +538,22 @@ Ensure all string values in the JSON are properly escaped if necessary.
             blog_package = json.loads(processed_output)
             logging.info("Successfully parsed JSON response from Blog LLM.")
             # Updated required_keys to match the new output format section
-            required_keys = ["primary_focus_keyword", "secondary_focus_keyword", "title", "seo_title", "slug", "meta_description", "alt_text", "tags", "content", "instagram_story_title", "instagram_story_description"]
+            required_keys = ["primary_focus_keyword", "secondary_focus_keyword", "additional_focus_keywords", "title", "seo_title", "slug", "meta_description", "alt_text", "tags", "content", "instagram_story_title", "instagram_story_description"]
             if not all(key in blog_package for key in required_keys):
                 # Calculate missing keys properly
                 present_keys = set(blog_package.keys())
                 required_keys_set = set(required_keys)
                 missing_keys = list(required_keys_set - present_keys)
                 logging.error(f"Missing required keys in parsed JSON: {missing_keys}") 
-                save_output_to_file(raw_blog_output=processed_output, error="Missing required keys", slug='json-error')
+                save_output_to_file(raw_blog_output=processed_output, error=f"Missing required keys: {missing_keys}", slug='json-error')
                 return {"error": "LLM response did not contain all required fields in JSON."}
             
+            # Additional validation for additional_focus_keywords being a list
+            if not isinstance(blog_package.get('additional_focus_keywords'), list):
+                logging.error(f"Invalid type for 'additional_focus_keywords': expected list, got {type(blog_package.get('additional_focus_keywords'))}")
+                save_output_to_file(raw_blog_output=processed_output, error="Invalid type for 'additional_focus_keywords'", slug='json-type-error')
+                return {"error": "LLM response contained invalid type for 'additional_focus_keywords'."}
+
             slug = blog_package.get('slug')
             if slug:
                 blog_package['filename'] = f"hooshews.com-{slug}.webp"
@@ -599,9 +620,11 @@ Based on these inputs, craft **one** creative and well-structured image prompt. 
 4.  **Subtle Character Integration:** Crucially, include instructions for the image generator to incorporate the visual likeness of a specific character photo/avatar (which I will provide when using the generated prompt). This integration must be **subtle and creative**:
     *   Use the character's distinct visual appearance (face, clothing style if relevant) as the reference.
     *   **Do NOT rigidly copy the exact pose, gesture, or background** from the provided character photo.
-    *   **Adapt the character's posture, position, scale, and action** so they fit *naturally and contextually* within the generated scene's narrative or environment.
+    *   **Adapt the character's posture, position, scale, and action** so they fit *naturally and contextually* within the generated scene's narrative or environment (e.g., **do not just paste the character photo onto a generic background**).
     *   The character should **not** be the main focus but should exist *within* the scene almost like an easter egg or a recurring signature, hinting at a consistent presence. The placement should feel intentional but discreet.
-5.  **Subtle Branding:** Include a subtle reference to "Hooshews" or incorporate the brand color `#4379f2` naturally within the scene (e.g., as an accent color on an object, a subtle logo on a device screen, a background element). Keep it discreet and not distracting.
+5.  **Subtle Branding:** Include a subtle reference to "Hooshews" or incorporate the brand color `#4379f2`. 
+    *   Use the color `#4379f2` **sparingly and naturally as an accent** within the scene (e.g., on a small object, a UI element, a subtle light effect). 
+    *   **Crucially, do NOT make this color the dominant theme or background color of the entire image.** The goal is a *hint* of branding, not a monochromatic theme, ensuring visual variety across different blog post thumbnails.
 6.  **Relevance to Content:** Ensure the thumbnail visually reflects the main theme or keywords of the blog post ([HEADER], [DESCRIPTION]). 
 7.  Ensure the final prompt you generate is clear, evocative, and likely to produce a compelling, unique, and high-CTR (Click-Through Rate) thumbnail image fulfilling all these conditions.
 

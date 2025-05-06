@@ -111,10 +111,16 @@ def main():
                     st.markdown(f"**کلمه کلیدی کانونی:**")
                     primary_kw = result_package.get('primary_focus_keyword', 'N/A')
                     secondary_kw = result_package.get('secondary_focus_keyword')
-                    focus_kw_display = primary_kw
+                    additional_kws = result_package.get('additional_focus_keywords') # Get additional keywords
+                    
+                    focus_kw_list = [primary_kw] if primary_kw != 'N/A' else []
                     if secondary_kw:
-                        focus_kw_display += f", {secondary_kw}"
-                    st.code(focus_kw_display, language=None)
+                        focus_kw_list.append(secondary_kw)
+                    if additional_kws and isinstance(additional_kws, list):
+                         focus_kw_list.extend(additional_kws)
+                    
+                    focus_kw_display = ", ".join(focus_kw_list)
+                    st.code(focus_kw_display if focus_kw_display else 'N/A', language=None)
                 
                 st.divider()
                 with st.expander("📄 محتوای اصلی وبلاگ (Markdown Rendered)", expanded=True):
@@ -167,6 +173,7 @@ def main():
                 wp_tag_names = display_data.get('tags') # Get tag names from LLM output
                 wp_primary_focus_keyword = display_data.get('primary_focus_keyword') # Get primary focus keyword
                 wp_secondary_focus_keyword = display_data.get('secondary_focus_keyword') # Get secondary focus keyword
+                wp_additional_focus_keywords = display_data.get('additional_focus_keywords') # Get additional keywords
                 # Get SEO Title and Description from LLM output
                 wp_seo_title = display_data.get('seo_title') # Use generated SEO title
                 wp_seo_description = display_data.get('meta_description') # Use generated meta description
@@ -199,6 +206,7 @@ def main():
                                                     tag_names=wp_tag_names, # Pass the list of names
                                                     primary_focus_keyword=wp_primary_focus_keyword, # Pass primary
                                                     secondary_focus_keyword=wp_secondary_focus_keyword, # Pass secondary
+                                                    additional_focus_keywords=wp_additional_focus_keywords, # Pass additional
                                                     seo_title=wp_seo_title, # Pass SEO Title
                                                     seo_description=wp_seo_description, # Pass SEO Description
                                                     image_path=wp_image_path, # Pass found image path or None
