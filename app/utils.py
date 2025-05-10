@@ -402,7 +402,10 @@ Title (عنوان):
 *   Incorporate the `primary_focus_keyword`.
 *   Try to naturally incorporate the `secondary_focus_keyword` as well, if possible without sacrificing clarity or sounding forced.
 *   Try to keep the meaning very close to the original source title, translating it appropriately into natural Persian.
-*   **Handling English Terms:** Retain original English terms for technical concepts, brand names, specific jargon, or proper nouns where a direct Persian translation might lose meaning, search relevance, or accuracy. Alternatively, if you translate such a term to Persian, include the original English term in parentheses `()` immediately after the translation (e.g., `هوش مصنوعی (AI)`).
+*   **Handling English Terms:** 
+    *   Retain original English terms for technical concepts, brand names, specific jargon, or proper nouns where a direct Persian translation might lose meaning, search relevance, or accuracy. 
+    *   **For major international brand names (e.g., Reddit, Google, OpenAI), prioritize using the original English name in the H1 title.** If a Persian transliteration is commonly used and aids readability, it can follow in parentheses, but the English form should be prominent (e.g., `Reddit (ردیت)` or simply `Reddit`).
+    *   Alternatively, if you translate other technical terms to Persian, include the original English term in parentheses `()` immediately after the translation (e.g., `هوش مصنوعی (AI)`).
 *   **Title Readability Enhancement:** 
     *   Attempt to use a **Power Word** (like "شگفت‌انگیز", "ضروری", "اثبات‌شده", "راز", "نهایی", "ساده") if it fits naturally and enhances clickability.
     *   Consider including a **number** (e.g., "7 راهکار...") if it makes sense for the content (like a list post).
@@ -412,7 +415,7 @@ SEO Title (عنوان سئو):
 
 *   Generate a separate, concise title specifically optimized for **search engine results pages (SERPs)**.
 *   **Strictly keep this title under 60 characters.**
-*   **Crucially, include the exact `primary_focus_keyword` prominently, ideally near the beginning.**
+*   **Crucially, the exact `primary_focus_keyword` MUST be included prominently, ideally starting the SEO title. This is a strict SEO requirement.**
 *   Base it on the main Title and keywords, but prioritize brevity and SERP click-through rate.
 
 Permalink/Slug (پیوندیکتا):
@@ -425,18 +428,18 @@ Example: ai-learning-solutions
 Meta Description (توضیح):
 
 *   Write a compelling meta description in Persian (strictly between 150-160 characters).
-*   **Crucially, include the exact `primary_focus_keyword` naturally within the description.**
+*   **Crucially, the exact `primary_focus_keyword` MUST be included naturally within the description. This is a strict SEO requirement.**
 *   Try to naturally incorporate the `secondary_focus_keyword` as well, if possible.
 *   Accurately summarize the post's content to maximize click-through rate (CTR) from search results.
 *   Include a strong call-to-action (e.g., "بیشتر بدانید") to improve CTR.
 
 Content Generation:
 
-*   **Introduction:** Start with a friendly, personal greeting addressing the Hooshews (هوشیوز) audience directly. Write the introduction (and the whole post) in a conversational, almost journal-like tone. Connect the topic to hooshews.com's focus on AI/tech news.
+*   **Introduction:** In the first paragraph, include a friendly, personal greeting addressing the Hooshews (هوشیوز) audience directly, but **do not always place it as the very first sentence**. Vary the placement and style of the greeting to keep introductions feeling natural and diverse. Write the introduction (and the whole post) in a conversational, almost journal-like tone. Connect the topic to hooshews.com's focus on AI/tech news.
 *   **Focus Keyword Placement:** 
     *   **Crucially, include the exact `primary_focus_keyword` within the first 10% of the main content body (after the intro).**
-    *   **Incorporate both the `primary_focus_keyword` and `secondary_focus_keyword` naturally into `##` (H2) and `###` (H3) headings.**
-    *   Maintain a **natural keyword density** for *both* focus keywords throughout the content, aiming for approximately 1-1.5% density *combined*, prioritizing the primary keyword slightly more. **Avoid keyword stuffing.**
+    *   **Incorporate the `primary_focus_keyword` naturally into at least one `##` (H2) or `###` (H3) heading. Also incorporate the `secondary_focus_keyword` into other `##` (H2) or `###` (H3) headings where relevant.** This is important for on-page SEO.
+    *   Maintain a **natural keyword density** for *all* focus keywords throughout the content, aiming for approximately 1.5-2.0% density *combined* (Primary: ~1%, Secondary: ~0.5%, Additional: ~0.25% each), integrated naturally. **Avoid keyword stuffing.**
 *   **Body:** Write a comprehensive, *unique* Persian blog post that summarizes, explains, and potentially *adds value beyond* the key information from the source body. 
     *   **Strictly avoid copying sentences or significant phrases** from the source body. Focus on synthesizing information and expressing it in **completely original wording**.
     *   When instructed to **'add value beyond'** the source, this means incorporating elements like: **original analysis, unique examples relevant to the Persian audience, connections to recent local events or trends (if applicable), or a concluding thought/opinion.**
@@ -445,15 +448,15 @@ Content Generation:
     *   Structure the content beautifully using Markdown. Make it visually appealing and easy to scan. Use Markdown elements like bullet points (`* point`), numbered lists (`1. point`), bold text (`**important term**`).
     *   Use appropriate Markdown for headings (e.g., `##` for H2 headings, `###` for H3 headings).
     *   **Crucially, keep paragraphs short and focused, ideally 2-4 sentences and well under 120 words each.**
-    *   Add at least one unique insight or perspective (e.g., a practical tip, a local context, or a forward-looking question).
+    *   Add at least one unique insight or perspective (e.g., a practical tip, a local context, or a forward-looking question). <--- This aligns with the 'add value' instruction above.
     *   **Suggest Media:** Where appropriate, insert placeholders like `[پیشنهاد تصویر: توضیح تصویر مورد نیاز در اینجا]` or `[پیشنهاد ویدیو: توضیح ویدیوی مورد نیاز در اینجا]` to guide manual media insertion later.
 *   **Handling English Terms:** Within the body text, follow the same principle as for the title: keep essential English terms directly, or if translating, follow with the English term in parentheses `()` (e.g., `یادگیری ماشین (Machine Learning)`).
 *   **Quote Handling & Attribution:** When including a direct quote:
-    *   Format the quote distinctly, for example using Persian quotation marks (`«نقل قول»`).
+    *   Format the quote distinctly using **Markdown blockquote syntax (prefix each line of the quote with '> ')**. You may optionally also use Persian quotation marks `« »` within the blockquoted text if appropriate for style.
     *   **Crucially, provide clear attribution.** Identify the speaker/author and their relevant title or role.
     *   Specify the context: where or when the quote originated (e.g., a specific event, publication, year).
     *   If a reliable online source for the quote exists (e.g., an official transcript, article, or interview), attempt to find and include a Markdown link `[منبع نقل قول](URL)` immediately after the attribution.
-    *   Attribute using an em dash (`—`) before the source information on a new line below the quote.
+    *   Attribute using an em dash (`—`) before the source information on a new line below the quote (this should also be part of the blockquote if it directly follows the quoted text).
 *   **Linking (External):** 
     *   **Goal:** Enhance credibility and provide value by linking externally to high-quality, authoritative sources.
     *   **What to Link:** Identify opportunities to link key **English terms, brand names (like OpenAI, Google Gemini), specific data points, technical concepts, or cited studies/sources** to their official/authoritative URLs.
