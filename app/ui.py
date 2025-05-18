@@ -7,7 +7,10 @@ import io
 import logging
 import json
 
-from .utils import generate_persian_blog_package, initialize_llm_clients, create_draft_post
+from .content_generator import generate_persian_blog_package, generate_instagram_post_texts, analyze_blog_for_instagram_inputs, generate_instagram_story_teasers
+from .llm_clients import initialize_llm_clients
+from .wordpress_handler import create_draft_post
+from .file_utils import list_pantry_baskets_async, get_pantry_basket_content_async
 
 GRAPHIC_DIR = "images"
 
@@ -20,7 +23,8 @@ def main():
     st.title("📝 Hooshews Persian Blog Post Generator")
     st.caption("Generate SEO-optimized Persian blog posts from English source articles.")
 
-    llm_blog, llm_image_prompt = initialize_llm_clients()
+    # Initialize all three LLM clients
+    llm_blog, llm_image_prompt, llm_instagram_text = initialize_llm_clients()
 
     st.header("Source Article Input")
     source_title = st.text_input("Source Title (H1)")
@@ -39,8 +43,8 @@ def main():
             
             if 'final_parsed_package' in uploaded_full_data and uploaded_full_data['final_parsed_package'] is not None:
                 st.session_state.uploaded_data = uploaded_full_data['final_parsed_package']
-                st.session_state.generation_result = None
-                st.info(f"Successfully loaded data from: {uploaded_json_file.name}")
+                st.session_state.generation_result = None # Clear any previous generation to prioritize upload
+                st.success(f"Successfully loaded data from local file: {uploaded_json_file.name}")
             else:
                 st.error(f"Error: 'final_parsed_package' key not found or is null in {uploaded_json_file.name}. Cannot load data.")
                 if 'uploaded_data' in st.session_state: del st.session_state.uploaded_data 
@@ -51,27 +55,85 @@ def main():
         except Exception as e:
             st.error(f"An error occurred while processing the uploaded file: {e}")
             if 'uploaded_data' in st.session_state: del st.session_state.uploaded_data 
+    
+    # --- Pantry Cloud Loading Section ---
+    st.subheader("Load from Pantry Cloud")
+    pantry_id_env = os.getenv("PANTRY_ID")
+
+    if not pantry_id_env:
+        st.warning("PANTRY_ID not found in environment variables. Pantry loading is disabled.")
+    else:
+        if "pantry_basket_names" not in st.session_state:
+            st.session_state.pantry_basket_names = []
+
+        if st.button("Fetch Baskets from Pantry"):
+            with st.spinner("Fetching basket list from Pantry..."):
+                baskets = asyncio.run(list_pantry_baskets_async(pantry_id_env))
+                if baskets is not None:
+                    st.session_state.pantry_basket_names = baskets
+                    if not baskets:
+                        st.info("No baskets found in your Pantry.")
+                    else:
+                        st.success(f"Found {len(baskets)} baskets in your Pantry.")
+                else:
+                    st.error("Failed to fetch basket list from Pantry. Check logs for details.")
+                    st.session_state.pantry_basket_names = []
+        
+        if st.session_state.pantry_basket_names:
+            selected_pantry_basket = st.selectbox(
+                "Select a Pantry basket to load:",
+                options=st.session_state.pantry_basket_names
+            )
+
+            if st.button("Load Selected Pantry Basket"):
+                if selected_pantry_basket:
+                    with st.spinner(f"Loading '{selected_pantry_basket}' from Pantry..."):
+                        basket_content = asyncio.run(get_pantry_basket_content_async(pantry_id_env, selected_pantry_basket))
+                        if basket_content and isinstance(basket_content, dict):
+                            if 'final_parsed_package' in basket_content and basket_content['final_parsed_package'] is not None:
+                                st.session_state.uploaded_data = basket_content['final_parsed_package']
+                                st.session_state.generation_result = None # Clear any previous generation
+                                st.success(f"Successfully loaded data from Pantry basket: {selected_pantry_basket}")
+                            else:
+                                st.error(f"Error: 'final_parsed_package' key not found or is null in Pantry basket '{selected_pantry_basket}'.")
+                                if 'uploaded_data' in st.session_state: del st.session_state.uploaded_data
+                        else:
+                            st.error(f"Failed to load or parse content from Pantry basket '{selected_pantry_basket}'. Check logs.")
+                            if 'uploaded_data' in st.session_state: del st.session_state.uploaded_data
+                else:
+                    st.warning("No Pantry basket selected.")
+        elif not st.session_state.pantry_basket_names and pantry_id_env: # Only show if pantry ID exists but no baskets fetched/found
+            st.caption("Click 'Fetch Baskets from Pantry' to see available saves.")
+
     st.divider()
 
-    if llm_blog and llm_image_prompt:
+    # Check if all LLM clients are initialized
+    if llm_blog and llm_image_prompt and llm_instagram_text:
         if "generation_result" not in st.session_state:
             st.session_state.generation_result = None
+
+        # Add checkboxes for optional generations
+        include_instagram_posts = st.checkbox("Include Instagram Post Texts", value=True, help="Generate viral title and caption for Instagram based on the blog content.")
+        include_story_teasers = st.checkbox("Include Instagram Story Teasers", value=True, help="Generate Farsi teaser snippets for Instagram Stories.")
 
         if st.button("✨ Generate Persian Blog Post Package"):
             if not source_name or not source_title or not source_body or not source_url:
                 st.warning("Please provide Source Name, Source Title, Source Body, and Source URL.")
             else:
-                with st.spinner("Generating Persian blog post and image prompt..."):
+                with st.spinner("Generating Persian blog post, image prompts (blog & Instagram), and Instagram texts..."): # Updated spinner
                     result_package = asyncio.run(generate_persian_blog_package(
                         llm_blog_client=llm_blog, 
                         llm_image_prompt_client=llm_image_prompt, 
+                        llm_instagram_text_client=llm_instagram_text, # Pass the Instagram text client
                         source_title=source_title, 
                         source_body=source_body,   
                         source_name=source_name,
-                        source_url=source_url
+                        source_url=source_url,
+                        include_instagram_texts=include_instagram_posts, # Pass the checkbox state for post
+                        include_story_teasers=include_story_teasers # Pass the checkbox state for story
                     ))
                 st.session_state.generation_result = result_package 
-                if 'uploaded_data' in st.session_state: del st.session_state.uploaded_data 
+                if 'uploaded_data' in st.session_state: del st.session_state.uploaded_data # Clear uploaded data if new generation occurs
         
         display_data = None
         data_source_message = ""
@@ -84,7 +146,7 @@ def main():
 
         if display_data:
             st.info(data_source_message)
-            result_package = display_data
+            result_package = display_data # This is the 'final_package' from utils
             st.header("Generated Output")
             st.markdown('<div dir="rtl">', unsafe_allow_html=True)
 
@@ -111,7 +173,7 @@ def main():
                     st.markdown(f"**کلمه کلیدی کانونی:**")
                     primary_kw = result_package.get('primary_focus_keyword', 'N/A')
                     secondary_kw = result_package.get('secondary_focus_keyword')
-                    additional_kws = result_package.get('additional_focus_keywords') # Get additional keywords
+                    additional_kws = result_package.get('additional_focus_keywords') 
                     
                     focus_kw_list = [primary_kw] if primary_kw != 'N/A' else []
                     if secondary_kw:
@@ -128,18 +190,42 @@ def main():
                     st.markdown("**برای کپی کردن:**")
                     st.code(result_package.get('content', 'N/A'), language='markdown')
                 st.divider()
-                with st.expander("🖼️ پرامپت تولید تصویر"):
+                with st.expander("🖼️ پرامپت تولید تصویر (وبلاگ)"):
                     st.code(result_package.get('image_prompt', 'N/A'), language=None)
                 st.divider()
-                with st.expander("📱 پیشنهادات استوری اینستاگرام"):
-                    st.markdown("**عنوان استوری:**")
-                    st.code(result_package.get('instagram_story_title', 'N/A'), language=None)
-                    st.markdown("**توضیحات/تیزر استوری:**")
-                    st.code(result_package.get('instagram_story_description', 'N/A'), language=None)
+                # This section now directly uses data from result_package (which is display_data)
+                with st.expander("📸 اینستاگرام: عنوان، کپشن و پرامپت تصویر", expanded=True):
+                    st.markdown("**عنوان ویروسی پست اینستاگرام:**")
+                    # Using st.text_input (disabled) for shorter text, or st.text_area for consistency
+                    st.text_input("", value=result_package.get('instagram_post_title', 'N/A'), disabled=True, key="insta_title_disp")
+                    st.markdown("**کپشن کامل پست اینستاگرام:**")
+                    st.text_area("", value=result_package.get('instagram_post_caption', 'N/A'), height=250, disabled=True, key="insta_caption_disp")
+                    st.markdown("**پرامپت تصویر اینستاگرام (برای تولید عکس پست):**")
+                    st.text_area("", value=result_package.get('instagram_image_prompt', 'N/A'), height=150, disabled=True, key="insta_img_prompt_disp") # Also changed for consistency
+                st.divider()
                 st.success("Text generation complete!")
                 st.divider()
 
-                st.subheader("🖼️ Upload and Save Thumbnail Image")
+                # Display Instagram Story Teasers if generated
+                with st.expander("📸 اینستاگرام: استوری تیزرها", expanded=True):
+                    story_teasers = result_package.get('instagram_story_teasers')
+                    if story_teasers and isinstance(story_teasers, dict) and not story_teasers.get("error"):
+                        st.markdown(f"**1. Main Title (تیتر اصلی):** {story_teasers.get('story_main_title', 'N/A')}")
+                        st.markdown(f"**2. Subtitle/Question (زیرنویس/سوال):** {story_teasers.get('story_subtitle', 'N/A')}")
+                        st.markdown(f"**3. Body Text (متن بدنه):**")
+                        st.text_area("Story Body Text", value=story_teasers.get('story_body_text', 'N/A'), height=150, disabled=True, key="story_body_disp")
+                    elif story_teasers and story_teasers.get("error"):
+                         st.error(f"Error generating story teasers: {story_teasers.get('error')}")
+                         if story_teasers.get("raw_output"):
+                             st.code(story_teasers.get("raw_output"), language=None)
+                    else:
+                        st.info("Instagram Story teasers not generated or not requested.")
+                        st.markdown("**1. Main Title (تیتر اصلی):** N/A")
+                        st.markdown("**2. Subtitle/Question (زیرنویس/سوال):** N/A")
+                        st.markdown("**3. Body Text (متن بدنه):** N/A")
+
+                st.divider()
+                st.subheader("🖼️ Upload and Save Thumbnail Image (Blog)")
                 uploaded_image = st.file_uploader("Choose an image file (JPG, PNG, etc.)...", type=["jpg", "jpeg", "png"])
                 
                 if uploaded_image is not None:
@@ -230,12 +316,9 @@ def main():
                         st.error(f"❌ Failed to create WordPress draft (Step 1 failed): {wp_result.get('error')}")
                 else:
                     st.warning("Cannot create draft. Title or Content missing from the generated/loaded data.")
-        else:
-            pass 
 
     else:
-        st.error("❌ LLM Client Initialization Failed. Cannot generate package.")
-        st.warning("Please ensure the GOOGLE_API_KEY is correctly set in your .env file and check the application logs for specific errors.")
+        st.error("LLM clients could not be initialized. Please check your GOOGLE_API_KEY and network connection.")
 
 if __name__ == "__main__":
     main()
