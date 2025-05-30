@@ -179,6 +179,7 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
     # Define placeholder for image prompts in case of errors later
     blog_thumbnail_image_prompt = "Error: Default blog image prompt."
     instagram_post_image_prompt = "Error: Default Instagram image prompt."
+    instagram_video_prompt = "Error: Default Instagram video prompt."
     pantry_api_id = os.getenv("PANTRY_ID") # Get Pantry ID from environment
 
 
@@ -205,6 +206,7 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                 logging.error(f"Missing required keys in parsed JSON for blog content: {missing_keys}")
                 await save_output_to_file_async(
                     raw_blog_output=processed_output, 
+                    raw_instagram_video_prompt=instagram_video_prompt,
                     error=f"Blog content JSON missing keys: {missing_keys}", 
                     slug='json-error-blog',
                     pantry_id=pantry_api_id # Pass pantry_id
@@ -215,6 +217,7 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                 logging.error(f"Invalid type for 'additional_focus_keywords': expected list")
                 await save_output_to_file_async(
                     raw_blog_output=processed_output, 
+                    raw_instagram_video_prompt=instagram_video_prompt,
                     error="Invalid type for additional_focus_keywords", 
                     slug='json-type-error-blog',
                     pantry_id=pantry_api_id # Pass pantry_id
@@ -229,14 +232,60 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                 logging.warning("Slug key missing or empty in blog JSON, using default filename.")
 
         except json.JSONDecodeError as json_err:
-            logging.error(f"Failed to decode JSON from Blog LLM: {json_err}. Raw: {processed_output}")
-            await save_output_to_file_async(
-                raw_blog_output=processed_output, 
-                error=str(json_err), 
-                slug='json-decode-error-blog',
-                pantry_id=pantry_api_id # Pass pantry_id
-            )
-            return {"error": f"Could not parse Blog LLM response as JSON. See logs."}
+            logging.warning(f"Initial JSON parsing failed: {json_err}. Attempting to fix literal newlines in JSON...")
+            
+            # Try to fix literal newlines in JSON string values
+            try:
+                # Step 1: Protect already escaped sequences
+                temp_output = processed_output.replace('\\"', '__TEMP_QUOTE__')
+                temp_output = temp_output.replace('\\n', '__TEMP_NEWLINE__')
+                
+                # Step 2: Find literal newlines inside JSON string values and escape them
+                # This regex finds patterns like "key": "value with\nliteral newline" and fixes them
+                
+                # Replace literal newlines inside string values (between quotes)
+                def fix_newlines_in_strings(match):
+                    full_match = match.group(0)
+                    # Replace literal newlines with \n inside the string value
+                    return full_match.replace('\n', '\\n')
+                
+                # Pattern to match JSON string values that might contain literal newlines
+                # This handles both simple and complex multi-line string values
+                pattern = r'"[^"]*":\s*"(?:[^"\\]|\\.)*(?:\n(?:[^"\\]|\\.)*)*"'
+                temp_output = re.sub(pattern, fix_newlines_in_strings, temp_output, flags=re.MULTILINE | re.DOTALL)
+                
+                # Step 3: Restore protected sequences
+                temp_output = temp_output.replace('__TEMP_NEWLINE__', '\\n')
+                temp_output = temp_output.replace('__TEMP_QUOTE__', '\\"')
+                
+                # Step 4: Remove any trailing commas
+                temp_output = re.sub(r',(\s*[}\]])', r'\1', temp_output)
+                
+                logging.info(f"Fixed JSON (first 500 chars): {temp_output[:500]}...")
+                
+                blog_package_content = json.loads(temp_output)
+                logging.info("Successfully parsed JSON after fixing literal newlines.")
+                
+            except json.JSONDecodeError as json_err2:
+                logging.error(f"Failed to decode JSON even after newline fixes: {json_err2}. Raw (first 500 chars): {processed_output[:500]}...")
+                await save_output_to_file_async(
+                    raw_blog_output=processed_output, 
+                    raw_instagram_video_prompt=instagram_video_prompt,
+                    error=f"Blog content JSON decode error: {json_err2}", 
+                    slug='json-decode-error-blog',
+                    pantry_id=pantry_api_id
+                )
+                return {"error": f"Could not parse Blog LLM response as JSON: {json_err2}"}
+            except Exception as fix_err:
+                logging.error(f"Error while trying to fix JSON: {fix_err}. Raw (first 500 chars): {processed_output[:500]}...")
+                await save_output_to_file_async(
+                    raw_blog_output=processed_output, 
+                    raw_instagram_video_prompt=instagram_video_prompt,
+                    error=f"Blog content JSON fix error: {fix_err}", 
+                    slug='json-fix-error-blog',
+                    pantry_id=pantry_api_id
+                )
+                return {"error": f"Error while fixing Blog LLM JSON: {fix_err}"}
         
         # Initialize the final package with the blog content
         final_package = {**blog_package_content} # Start with content, meta, tags
@@ -252,11 +301,21 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                 )
                 final_package['image_prompt'] = blog_thumbnail_image_prompt # Blog thumbnail prompt
 
-                instagram_post_image_prompt = await generate_instagram_image_prompt( # For Instagram post image
-                    llm_client=llm_image_prompt_client,
-                    header=source_title, # Can also use source_title for context here
-                    description=source_body # Or specific snippets if preferred later
-                )
+                # Choose appropriate Instagram image prompt based on whether video generation is planned
+                if include_instagram_texts:
+                    # Use video-ready version when Instagram texts (and thus video prompts) will be generated
+                    instagram_post_image_prompt = await generate_instagram_image_prompt_for_video( # For Instagram post image (video-ready)
+                        llm_client=llm_image_prompt_client,
+                        header=source_title, # Can also use source_title for context here
+                        description=source_body # Or specific snippets if preferred later
+                    )
+                else:
+                    # Use static version when no Instagram texts (and thus no video prompts) will be generated
+                    instagram_post_image_prompt = await generate_instagram_image_prompt( # For Instagram post image (static)
+                        llm_client=llm_image_prompt_client,
+                        header=source_title, # Can also use source_title for context here
+                        description=source_body # Or specific snippets if preferred later
+                    )
                 final_package['instagram_image_prompt'] = instagram_post_image_prompt
             else:
                 final_package['image_prompt'] = "Error: Missing source for blog image prompt."
@@ -296,16 +355,48 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                     
                     if insta_texts.get("error"):
                         logging.error(f"Error during Instagram text generation: {insta_texts.get('error')}")
-                        # Optionally set error in result_package
+                        # Set error values for Instagram texts when entire process fails
+                        final_package['instagram_post_title'] = f"Error: Instagram text generation failed - {insta_texts.get('error')}"
+                        final_package['instagram_post_caption'] = f"Error: Instagram text generation failed - {insta_texts.get('error')}"
+                        final_package['instagram_video_prompt'] = "Instagram video prompt not generated (Instagram texts disabled by user)."
                     else:
                         logging.info("Instagram text generation complete.")
-                        # Add generated Instagram texts to the main result package
-                        blog_package_content['instagram_post_title'] = insta_texts.get('instagram_post_title')
-                        blog_package_content['instagram_post_caption'] = insta_texts.get('instagram_post_caption')
+                        # Add generated Instagram texts to the final result package
+                        final_package['instagram_post_title'] = insta_texts.get('instagram_post_title')
+                        final_package['instagram_post_caption'] = insta_texts.get('instagram_post_caption')
+                        
+                        # --- Generate Instagram Video Prompt ---
+                        # Generate video prompt using the Instagram caption that was just created
+                        if llm_image_prompt_client and source_title and source_body and insta_texts.get('instagram_post_caption'):
+                            try:
+                                logging.info("Starting Instagram video prompt generation...")
+                                instagram_video_prompt = await generate_instagram_video_prompt(
+                                    llm_client=llm_image_prompt_client,
+                                    header=source_title,
+                                    description=source_body,
+                                    instagram_caption=insta_texts.get('instagram_post_caption')
+                                )
+                                final_package['instagram_video_prompt'] = instagram_video_prompt
+                                logging.info("Instagram video prompt generation complete.")
+                            except Exception as video_prompt_e:
+                                logging.exception(f"Error during Instagram video prompt generation: {video_prompt_e}")
+                                final_package['instagram_video_prompt'] = f"Error generating Instagram video prompt: {video_prompt_e}"
+                        else:
+                            final_package['instagram_video_prompt'] = "Error: Missing required data for Instagram video prompt generation."
+                            logging.warning("Skipping Instagram video prompt generation due to missing requirements.")
 
             except Exception as insta_gen_e:
                 logging.exception(f"An unexpected error occurred during Instagram text generation: {insta_gen_e}")
-                # Optionally set a general error in result_package
+                # Set error values for Instagram texts when entire process fails
+                final_package['instagram_post_title'] = f"Error: Instagram text generation failed - {insta_gen_e}"
+                final_package['instagram_post_caption'] = f"Error: Instagram text generation failed - {insta_gen_e}"
+                final_package['instagram_video_prompt'] = "Instagram video prompt not generated (Instagram texts disabled by user)."
+
+        # If Instagram texts were not generated because include_instagram_texts is False, set video prompt error
+        if not include_instagram_texts:
+            final_package['instagram_post_title'] = "Instagram post title not generated (disabled by user)."
+            final_package['instagram_post_caption'] = "Instagram post caption not generated (disabled by user)."
+            final_package['instagram_video_prompt'] = "Instagram video prompt not generated (Instagram texts disabled by user)."
 
         # --- Conditionally Generate Instagram Story Teasers ---
         # Only run this section if include_story_teasers is True and LLM client is available and blog content is available
@@ -334,10 +425,31 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
              logging.warning("Skipping Instagram Story teaser generation; blog content not available.")
              final_package['instagram_story_teasers'] = {"error": "Blog content not available for story teasers."}
 
+        # --- Always attempt to generate Instagram Video Prompt if it was not generated above ---
+        if not final_package.get('instagram_video_prompt') or 'not generated' in final_package.get('instagram_video_prompt', '') or final_package.get('instagram_video_prompt', '').startswith('Error'):
+            if llm_image_prompt_client and source_title and source_body:
+                try:
+                    fallback_caption = final_package.get('instagram_post_caption', '')
+                    logging.info("Attempting fallback Instagram video prompt generation...")
+                    fallback_video_prompt = await generate_instagram_video_prompt(
+                        llm_client=llm_image_prompt_client,
+                        header=source_title,
+                        description=source_body,
+                        instagram_caption=fallback_caption
+                    )
+                    final_package['instagram_video_prompt'] = fallback_video_prompt
+                    logging.info("Fallback Instagram video prompt generation successful.")
+                except Exception as fallback_video_e:
+                    logging.exception(f"Fallback Instagram video prompt generation failed: {fallback_video_e}")
+                    final_package['instagram_video_prompt'] = f"Error generating fallback Instagram video prompt: {fallback_video_e}"
+            else:
+                logging.warning("Cannot perform fallback video prompt generation due to missing LLM client or source data.")
+
         await save_output_to_file_async(
             raw_blog_output=blog_llm_raw_output,
             raw_image_prompt=blog_thumbnail_image_prompt, # Use the initialized variable
             raw_instagram_post_image_prompt=instagram_post_image_prompt, # Use the initialized variable
+            raw_instagram_video_prompt=final_package.get('instagram_video_prompt', instagram_video_prompt), # Add video prompt
             parsed_package=final_package,
             slug=final_package.get('slug', 'no-slug-blog-pkg'),
             pantry_id=pantry_api_id # Pass pantry_id
@@ -351,6 +463,7 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
             raw_blog_output=blog_llm_raw_output, 
             raw_image_prompt=blog_thumbnail_image_prompt, # Ensure these are passed even on early error
             raw_instagram_post_image_prompt=instagram_post_image_prompt,
+            raw_instagram_video_prompt=final_package.get('instagram_video_prompt', instagram_video_prompt), # Add video prompt
             error=str(e), 
             slug='error-blog-pkg',
             pantry_id=pantry_api_id_error # Pass pantry_id
@@ -389,19 +502,28 @@ Generate a single, creative prompt for an AI news blog post thumbnail:
         logging.exception(f"Error during async Image Prompt LLM invocation: {e}")
         return f"Error generating image prompt: {e}"
 
-# --- Instagram Image Prompt Generation Function ---
+# --- Instagram Image Prompt Generation Function (Static) ---
 async def generate_instagram_image_prompt(llm_client: ChatOpenAI, header: str, description: str) -> str:
-    """Generate a professional, satirical, witty, and visually bold image prompt for an Instagram post about tech/AI."""
+    """Generate a professional, satirical, witty, and visually bold image prompt for a static Instagram post about tech/AI."""
     prompt_fstring = f"""
-Instagram Image Prompt for Viral Post:
+Instagram Image Prompt for Viral Static Post:
 
-Generate a single, creative prompt for an Instagram post image:
+Generate a single, creative prompt for a static Instagram post image:
 
 - Start with: `Create image for an Instagram post.`
 - Visualize a bold, satirical, and visually striking scene inspired by the [HEADER] and [DESCRIPTION], playfully poking fun at the tech/AI world, its trends, or personalities.
 - The image should be eye-catching, unordinary, a little bit naughty and abnormal, but always highly relevant to the topic and suitable for a tech/AI news post.
 - Use clever exaggeration, industry in-jokes, or surreal elements to create a sense of "AI culture satire"—not childish or slapstick.
 - Humor should be smart, topical, and a bit irreverent, but always feel professional and on-brand for a tech-savvy audience.
+
+**Static Image Design Focus:**
+- Maximize visual impact in a single frame
+- Strong composition with clear focal points
+- Bold, attention-grabbing elements that work without movement
+- High contrast and dramatic lighting for mobile viewing
+- Intricate details that reward closer inspection
+- Perfect balance and visual hierarchy for immediate comprehension
+
 - Use the Hooshews brand color #4379f2 as a small accent only.
 - Subtly include the provided character in a witty or mischievous way, as a "signature" or easter egg.
 - Ensure the image is unique, highly shareable, and suitable for a square Instagram post.
@@ -415,13 +537,129 @@ Generate a single, creative prompt for an Instagram post image:
     """
     messages = [HumanMessage(content=prompt_fstring)]
     try:
-        logging.info(f"Invoking Instagram Image Prompt LLM (async)...")
+        logging.info(f"Invoking Instagram Image Prompt LLM (async) for static image...")
         response = await llm_client.ainvoke(messages)
-        logging.info("Instagram Image Prompt LLM invocation successful (async).")
+        logging.info("Instagram Image Prompt LLM invocation successful (async) for static image.")
         return response.content.strip()
     except Exception as e:
         logging.exception(f"Error during async Instagram Image Prompt LLM invocation: {e}")
         return f"Error generating Instagram image prompt: {e}"
+
+# --- Instagram Image Prompt Generation Function (Video-Ready) ---
+async def generate_instagram_image_prompt_for_video(llm_client: ChatOpenAI, header: str, description: str) -> str:
+    """Generate a professional, satirical, witty, and visually bold image prompt for an Instagram post optimized for video generation."""
+    prompt_fstring = f"""
+Instagram Image Prompt for Viral Post (Video-Ready):
+
+Generate a single, creative prompt for an Instagram post image that will be used as a base for video generation:
+
+- Start with: `Create image for an Instagram post that can be animated into movement.`
+- Visualize a bold, satirical, and visually striking scene inspired by the [HEADER] and [DESCRIPTION], playfully poking fun at the tech/AI world, its trends, or personalities.
+- The image should be eye-catching, unordinary, a little bit naughty and abnormal, but always highly relevant to the topic and suitable for a tech/AI news post.
+- Use clever exaggeration, industry in-jokes, or surreal elements to create a sense of "AI culture satire"—not childish or slapstick.
+- Humor should be smart, topical, and a bit irreverent, but always feel professional and on-brand for a tech-savvy audience.
+
+**Video-Ready Design Elements (Important for animation):**
+- Include separable layers: foreground characters/objects, midground elements, background scenes
+- Add tech elements that can pulse, glow, or float (screens, devices, holographic displays, data streams)
+- Include particle effects, light rays, or floating UI elements that can move naturally
+- Design with depth and dimension to allow parallax movement between layers
+- Add environmental elements like subtle lighting changes or atmospheric effects
+- Ensure characters and objects have space around them for subtle movements
+- Create elements that can loop naturally (rotating gears, flowing data, blinking lights)
+- Design interfaces and screens that can update or change content
+- Include atmospheric elements (smoke, mist, floating particles) that enhance movement
+
+- Use the Hooshews brand color #4379f2 as a small accent only.
+- Subtly include the provided character in a witty or mischievous way, as a "signature" or easter egg.
+- Ensure the image is unique, highly shareable, and suitable for a square Instagram post.
+- **Respond only with the generated image prompt.**
+
+---
+
+**`[HEADER]`**: {header}
+**`[DESCRIPTION]`**: {description}
+---
+    """
+    messages = [HumanMessage(content=prompt_fstring)]
+    try:
+        logging.info(f"Invoking Instagram Image Prompt LLM (async) for video-ready image...")
+        response = await llm_client.ainvoke(messages)
+        logging.info("Instagram Image Prompt LLM invocation successful (async) for video-ready image.")
+        return response.content.strip()
+    except Exception as e:
+        logging.exception(f"Error during async Instagram Image Prompt LLM invocation: {e}")
+        return f"Error generating Instagram image prompt for video: {e}"
+
+# --- Instagram Video Generation Prompt Function ---
+async def generate_instagram_video_prompt(llm_client: ChatOpenAI, header: str, description: str, instagram_caption: str) -> str:
+    """Generate a professional video generation prompt following Veo 2 best practices for creating viral Instagram videos from static photos."""
+    prompt_fstring = f"""
+Instagram Video Prompt for Veo 2 (Following Google's Best Practices):
+
+Generate a single, detailed video prompt that transforms a static Instagram photo into a captivating movement video using Google Veo 2 principles:
+
+**PROMPT STRUCTURE (Following Veo 2 Guidelines):**
+Your response should include these essential elements in a clear, descriptive prompt:
+
+1. **Subject**: The main focus (tech elements, AI personalities, devices, characters from the image)
+2. **Context**: The setting/environment (Silicon Valley office, tech conference, futuristic lab, etc.)
+3. **Action**: Specific movements and what's happening (subtle animations, character movements, environmental effects)
+4. **Style**: Visual aesthetic (satirical tech culture, professional with humor, cinematic quality)
+5. **Camera Motion**: How the camera moves (tracking shot, dolly in/out, gentle zoom, orbiting movement)
+6. **Composition**: Shot framing (square 1:1 for Instagram, close-up details, wide establishing shots)
+7. **Ambiance**: Mood, lighting, and atmosphere (tech office lighting, holographic glows, screen illumination)
+
+**TECHNICAL SPECIFICATIONS FOR INSTAGRAM:**
+- Duration: 3-8 seconds (ideal for Instagram posts and maximum engagement)
+- Format: Square (1:1) aspect ratio for Instagram feed
+- Movement: Subtle but captivating, loop-friendly
+- Quality: High-definition, smooth motion, minimal artifacts
+
+**MOVEMENT CATEGORIES TO CONSIDER:**
+- **Tech Environment**: Holographic displays updating, screen content changing, LED lights pulsing
+- **Character Animation**: Subtle head movements, eye blinks, hand gestures, typing motions
+- **Particle Effects**: Floating data streams, glowing particles, tech interface elements
+- **Camera Work**: Smooth tracking, gentle push-ins, orbiting around key subjects
+- **Environmental**: Atmospheric effects, lighting changes, background activity
+
+**VIRAL INSTAGRAM OPTIMIZATION:**
+- **Attention-Grabbing**: Movement that stops the scroll within first 2 seconds
+- **Loop-Friendly**: Seamless transitions for continuous viewing
+- **Mobile-First**: Optimized for small screen viewing and vertical feeds
+- **Shareable**: Visually striking moments that encourage sharing
+
+**CONTENT CONTEXT FOR ANIMATION:**
+**Original Header**: {header}
+**Source Description**: {description}
+**Instagram Caption**: {instagram_caption}
+
+**PROMPT WRITING GUIDELINES:**
+- Start with camera movement (e.g., "A smooth tracking shot of..." or "Gentle zoom into...")
+- Be highly descriptive and specific
+- Use positive language only (avoid "no", "don't", "not")
+- Include cinematic terminology
+- Add atmospheric details (lighting, particles, mood)
+- Specify tech-related movements that enhance the satirical tone
+- Ensure movements feel natural and professional, not gimmicky
+
+**EXAMPLE STRUCTURE:**
+"A [camera movement] of [subject] in [context], where [specific actions happen]. The [style elements] create [atmosphere] as [additional movements/effects]. [Lighting/ambiance details] enhance the [mood/tone]."
+
+Generate a complete, detailed video prompt that will create an engaging, viral-worthy Instagram video that brings the static image to life while maintaining the satirical tech culture humor and professional quality.
+
+**Respond only with the complete video generation prompt.**
+---
+    """
+    messages = [HumanMessage(content=prompt_fstring)]
+    try:
+        logging.info(f"Invoking Instagram Video Prompt LLM (async) using Veo 2 best practices...")
+        response = await llm_client.ainvoke(messages)
+        logging.info("Instagram Video Prompt LLM invocation successful (async) - Veo 2 optimized.")
+        return response.content.strip()
+    except Exception as e:
+        logging.exception(f"Error during async Instagram Video Prompt LLM invocation: {e}")
+        return f"Error generating Instagram video prompt: {e}"
 
 # --- New Instagram Post Text Generation Function (Using Specific Template) ---
 async def generate_instagram_post_texts(llm_client: ChatOpenAI, derived_blog_topic: str, derived_key_takeaways: list[str], derived_cta_word: str, derived_core_emotion: str) -> dict:
@@ -528,91 +766,30 @@ Ensure the generated text is entirely in Persian. Adhere strictly to the formatt
         
         # Clean potential markdown fences
         cleaned_output = raw_output.strip()
-        if cleaned_output.startswith("```json"):
-            cleaned_output = cleaned_output[7:]
-        if cleaned_output.endswith("```"):
-            cleaned_output = cleaned_output[:-3]
-        cleaned_output = cleaned_output.strip()
-
+        if cleaned_output.startswith("```json") or cleaned_output.startswith("```"):
+            cleaned_output = cleaned_output[cleaned_output.find("{"):cleaned_output.rfind("}") + 1]
+        
         try:
-            # Attempt 1: More careful aggressive cleaning for common LLM JSON issues.
-            # Goal: transform internal newlines in strings to \\n, fix common structural issues.
-            
-            # Step 1: Protect already correctly escaped sequences
-            temp_output = cleaned_output.replace('\\"', '__TEMP_QUOTE__') # Protect escaped quotes
-            temp_output = temp_output.replace('\\n', '__TEMP_NEWLINE__') # Protect escaped newlines
-            
-            # Step 2: Convert problematic literal newlines within presumed string content to __TEMP_NEWLINE__
-            # This is heuristic: find newlines that are likely inside quotes.
-            # This regex finds "key": "value\nvalue" and replaces \n with __TEMP_NEWLINE__
-            # It's hard to make perfect, but aims for common cases.
-            # A simpler approach might be to just replace all remaining \n with \n, then fix structural ones.
-            # For now, let's be more direct: assume all remaining newlines *inside typical string content* should be escaped.
-            # This is risky if newlines are part of the JSON structure and not properly handled by LLM.
-            # A simpler, broad replacement:
-            temp_output = temp_output.replace('\n', '__TEMP_NEWLINE__')
-            
-            # Step 3: Restore protected sequences
-            temp_output = temp_output.replace('__TEMP_NEWLINE__', '\\n') # Convert to proper JSON newline escape
-            temp_output = temp_output.replace('__TEMP_QUOTE__', '\\"')
-            temp_output = temp_output.replace('__TEMP_BACKSLASH__', '\\')
-            
-            # Step 4: Remove trailing commas before closing braces/brackets
-            temp_output = re.sub(r',[\s]*(\}|\])', r'\1', temp_output)
-            
-            parsed_json = json.loads(temp_output)
-            if isinstance(parsed_json, dict) and \
-               "instagram_post_title" in parsed_json and \
-               "instagram_post_caption" in parsed_json:
-                instagram_texts = parsed_json
-                # Unescape \\n to \n for display/use if they were part of original string values
-                if isinstance(instagram_texts.get("instagram_post_title"), str):
-                    instagram_texts["instagram_post_title"] = instagram_texts["instagram_post_title"].replace('\\n', '\n')
-                if isinstance(instagram_texts.get("instagram_post_caption"), str):
-                    instagram_texts["instagram_post_caption"] = instagram_texts["instagram_post_caption"].replace('\\n', '\n')
-                logging.info("Successfully parsed JSON for Instagram texts after cleaning attempts.")
-            else:
-                logging.warning("Parsed JSON after cleaning, but required keys missing.")
-                raise json.JSONDecodeError("Missing keys after cleaning", temp_output, 0)
-        
-        except json.JSONDecodeError as json_err_cleaned:
-            logging.warning(f"JSON parsing failed after cleaning attempts ({json_err_cleaned}). Falling back to regex on original cleaned_output.")
-            
-            # Regex fallback on the state of cleaned_output *before* aggressive in-string newline replacement
-            title_match = re.search(r'"instagram_post_title"\\s*:\\s*"(.*?)"(?=\\s*,\\s*"instagram_post_caption"|\s*\\})', cleaned_output, re.DOTALL)
-            caption_match = re.search(r'"instagram_post_caption"\\s*:\\s*"(.*?)"(?=\\s*\\})', cleaned_output, re.DOTALL)
-
+            instagram_texts = json.loads(cleaned_output)
+            return instagram_texts
+        except json.JSONDecodeError as jde:
+            logging.warning(f"JSON parsing failed for Instagram texts after ALL cleaning attempts ({str(jde)}). Raw cleaned output: {cleaned_output[:200]}...")
+            # Fallback to regex extraction with DOTALL flag for multiline content
+            title_match = re.search(r'"instagram_post_title":\s*"(.*?)"', cleaned_output, re.DOTALL)
+            caption_match = re.search(r'"instagram_post_caption":\s*"(.*?)"', cleaned_output, re.DOTALL)
             if title_match and caption_match:
-                title_str = title_match.group(1).replace('\\n', '\n').replace('\\"', '"').strip()
-                caption_str = caption_match.group(1).replace('\\n', '\n').replace('\\"', '"').strip()
-                
                 instagram_texts = {
-                    "instagram_post_title": title_str,
-                    "instagram_post_caption": caption_str
+                    "instagram_post_title": title_match.group(1).strip(),
+                    "instagram_post_caption": caption_match.group(1).strip()
                 }
-                logging.info("Successfully extracted Instagram texts using regex fallback.")
+                logging.info("Successfully extracted Instagram texts using fallback regex.")
+                return instagram_texts
             else:
-                logging.error(f"Could not parse Instagram texts with regex fallback. Title match: {bool(title_match)}, Caption match: {bool(caption_match)}. Raw: {cleaned_output}")
-                instagram_texts = {"error": "Could not parse Instagram texts from LLM (regex fallback failed)."}
-
+                logging.error(f"Could not parse Instagram texts with regex fallback. Title match: {bool(title_match)}, Caption match: {bool(caption_match)}. Raw: {cleaned_output[:200]}")
+                raise ValueError("Could not parse Instagram texts from LLM (regex fallback failed)")
     except Exception as e:
-        logging.exception(f"Error during Instagram Post Text generation: {e}")
-        instagram_texts = {"error": f"Error generating Instagram texts: {e}"}
-    
-    # Safely modify the caption if it exists and is a string, and no error occurred
-    if "error" not in instagram_texts and \
-       "instagram_post_caption" in instagram_texts and \
-       isinstance(instagram_texts.get("instagram_post_caption"), str):
-        
-        caption = instagram_texts["instagram_post_caption"]
-        # Replace sequences of two or more newlines with a single newline
-        modified_caption = re.sub(r'\n{2,}', '\n', caption)
-        
-        if caption != modified_caption: # Log only if a change was made
-            instagram_texts["instagram_post_caption"] = modified_caption
-            logging.info("Normalized multiple newlines in Instagram caption to single newlines (e.g., \\n\\n -> \\n).")
-            
-    return instagram_texts
+        logging.error(f"Error during Instagram text generation: {str(e)}")
+        raise
 
 # --- New Function to Analyze Blog Content for Instagram Inputs ---
 async def analyze_blog_for_instagram_inputs(llm_client: ChatOpenAI, blog_title: str, blog_content: str) -> dict:

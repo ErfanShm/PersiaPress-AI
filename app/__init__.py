@@ -15,6 +15,8 @@ from .content_generator import (
     generate_persian_blog_package,
     generate_image_prompt,
     generate_instagram_image_prompt,
+    generate_instagram_image_prompt_for_video,
+    generate_instagram_video_prompt,
     generate_instagram_post_texts,
     analyze_blog_for_instagram_inputs
 )
@@ -29,6 +31,8 @@ __all__ = [
     "generate_persian_blog_package",
     "generate_image_prompt",
     "generate_instagram_image_prompt",
+    "generate_instagram_image_prompt_for_video",
+    "generate_instagram_video_prompt",
     "generate_instagram_post_texts",
     "analyze_blog_for_instagram_inputs",
     "save_output_to_file_async",

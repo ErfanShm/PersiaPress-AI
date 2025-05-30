@@ -120,7 +120,7 @@ def main():
             if not source_name or not source_title or not source_body or not source_url:
                 st.warning("Please provide Source Name, Source Title, Source Body, and Source URL.")
             else:
-                with st.spinner("Generating Persian blog post, image prompts (blog & Instagram), and Instagram texts..."): # Updated spinner
+                with st.spinner("Generating Persian blog post, image prompts (blog & Instagram), video prompts, and Instagram texts..."): # Updated spinner
                     result_package = asyncio.run(generate_persian_blog_package(
                         llm_blog_client=llm_blog, 
                         llm_image_prompt_client=llm_image_prompt, 
@@ -194,14 +194,76 @@ def main():
                     st.code(result_package.get('image_prompt', 'N/A'), language=None)
                 st.divider()
                 # This section now directly uses data from result_package (which is display_data)
-                with st.expander("📸 اینستاگرام: عنوان، کپشن و پرامپت تصویر", expanded=True):
+                with st.expander("📸 اینستاگرام: عنوان، کپشن، پرامپت تصویر و ویدیو", expanded=True):
+                    st.markdown("### Instagram Content Generation Components")
+                    st.markdown("""
+This section contains all components needed for creating engaging Instagram content:
+1. Post Title & Caption - The text content for your Instagram post
+2. Image Prompt - Instructions for generating your post's image (either static or video-ready)
+3. Video Prompt - Instructions for transforming the generated image into a dynamic video
+                    """)
+                    st.divider()
+                    
                     st.markdown("**عنوان ویروسی پست اینستاگرام:**")
-                    # Using st.text_input (disabled) for shorter text, or st.text_area for consistency
                     st.text_input("", value=result_package.get('instagram_post_title', 'N/A'), disabled=True, key="insta_title_disp")
                     st.markdown("**کپشن کامل پست اینستاگرام:**")
                     st.text_area("", value=result_package.get('instagram_post_caption', 'N/A'), height=250, disabled=True, key="insta_caption_disp")
+                    
+                    st.divider()
+                    st.markdown("### Image Generation")
                     st.markdown("**پرامپت تصویر اینستاگرام (برای تولید عکس پست):**")
-                    st.text_area("", value=result_package.get('instagram_image_prompt', 'N/A'), height=150, disabled=True, key="insta_img_prompt_disp") # Also changed for consistency
+                    st.text_area("", value=result_package.get('instagram_image_prompt', 'N/A'), height=150, disabled=True, key="insta_img_prompt_disp")
+                    
+                    # Show which type of image prompt was generated with more detailed explanation
+                    if result_package.get('instagram_image_prompt', 'N/A') != 'N/A':
+                        if result_package.get('instagram_video_prompt', 'N/A') != 'N/A' and 'not generated' not in result_package.get('instagram_video_prompt', ''):
+                            st.info("""
+📹 **Image Type: Video-Ready Image Prompt**
+- Optimized for animation with separable layers
+- Includes elements designed for movement
+- Perfect for video transformation
+- Contains depth and parallax-ready components
+- Includes atmospheric elements for animation
+                            """)
+                        else:
+                            st.info("""
+📸 **Image Type: Static Image Prompt**
+- Optimized for single-frame visual impact
+- Focuses on strong composition and focal points
+- Perfect for static posts
+- Emphasizes immediate visual appeal
+- Designed for maximum engagement without motion
+                            """)
+                    
+                    st.divider()
+                    st.markdown("### Video Generation")
+                    st.markdown("**پرامپت ویدیو اینستاگرام (برای تولید ویدیو از عکس):**")
+                    st.text_area("", value=result_package.get('instagram_video_prompt', 'N/A'), height=200, disabled=True, key="insta_video_prompt_disp")
+                    
+                    if result_package.get('instagram_video_prompt', 'N/A') != 'N/A' and 'not generated' not in result_package.get('instagram_video_prompt', ''):
+                        st.info("""
+🎬 **How to Create Your Instagram Video:**
+
+1. First, use the **Image Prompt** above with your preferred AI image generation tool (like Midjourney or DALL-E) to create your base image.
+
+2. Then, use this **Video Prompt** with video generation tools like:
+   - Google Veo 2
+   - RunwayML
+   - D-ID
+   - or similar AI video generators
+
+3. The prompt is specifically designed following Veo 2 best practices to create:
+   - Engaging movement
+   - Professional transitions
+   - Seamless loops
+   - Viral-worthy animations
+
+4. The resulting video will be perfect for Instagram posts, maintaining the professional and satirical tech culture vibe while adding captivating motion.
+                        """)
+                    elif 'disabled by user' in result_package.get('instagram_video_prompt', ''):
+                        st.info("ℹ️ Video prompt generation is currently disabled. Enable Instagram text generation to get video prompts.")
+                    else:
+                        st.warning("⚠️ Video prompt generation encountered an error. You can still use the static image prompt above for your post.")
                 st.divider()
                 st.success("Text generation complete!")
                 st.divider()
