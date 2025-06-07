@@ -20,7 +20,8 @@ async def generate_persian_blog_package(
     source_name: str,
     source_url: str,
     include_instagram_texts: bool = True, # Added new parameter with default value
-    include_story_teasers: bool = True # Added new parameter for story generation
+    include_story_teasers: bool = True, # Added new parameter for story generation
+    include_iranian_video_prompt: bool = False # NEW: Added parameter for new video prompt
 ) -> dict:
     """ 
     Generates blog content, SEO metadata, blog thumbnail image prompt, 
@@ -178,9 +179,11 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
     processed_output = None 
     # Define placeholder for image prompts in case of errors later
     blog_thumbnail_image_prompt = "Error: Default blog image prompt."
-    instagram_post_image_prompt = "Error: Default Instagram image prompt."
     instagram_video_prompt = "Error: Default Instagram video prompt."
     pantry_api_id = os.getenv("PANTRY_ID") # Get Pantry ID from environment
+
+    # NEW: Initialize for Iranian Farsi video prompt
+    iranian_farsi_video_prompt = "Error: Iranian Farsi video prompt not generated."
 
 
     try:
@@ -301,50 +304,62 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                 )
                 final_package['image_prompt'] = blog_thumbnail_image_prompt # Blog thumbnail prompt
 
-                # Choose appropriate Instagram image prompt based on whether video generation is planned
-                if include_instagram_texts:
-                    # Use video-ready version when Instagram texts (and thus video prompts) will be generated
-                    instagram_post_image_prompt = await generate_instagram_image_prompt_for_video( # For Instagram post image (video-ready)
-                        llm_client=llm_image_prompt_client,
-                        header=source_title, # Can also use source_title for context here
-                        description=source_body # Or specific snippets if preferred later
-                    )
-                else:
-                    # Use static version when no Instagram texts (and thus no video prompts) will be generated
-                    instagram_post_image_prompt = await generate_instagram_image_prompt( # For Instagram post image (static)
-                        llm_client=llm_image_prompt_client,
-                        header=source_title, # Can also use source_title for context here
-                        description=source_body # Or specific snippets if preferred later
-                    )
-                final_package['instagram_image_prompt'] = instagram_post_image_prompt
+                # Always generate static Instagram image prompt
+                instagram_static_image_prompt = await generate_instagram_image_prompt( # For Instagram post image (static)
+                    llm_client=llm_image_prompt_client,
+                    header=source_title, # Can also use source_title for context here
+                    description=source_body # Or specific snippets if preferred later
+                )
+                final_package['instagram_static_image_prompt'] = instagram_static_image_prompt
+
+                # Always generate video-ready Instagram image prompt
+                instagram_video_ready_image_prompt = await generate_instagram_image_prompt_for_video( # For Instagram post image (video-ready)
+                    llm_client=llm_image_prompt_client,
+                    header=source_title, # Can also use source_title for context here
+                    description=source_body # Or specific snippets if preferred later
+                )
+                final_package['instagram_video_ready_image_prompt'] = instagram_video_ready_image_prompt
             else:
                 final_package['image_prompt'] = "Error: Missing source for blog image prompt."
-                final_package['instagram_image_prompt'] = "Error: Missing source for Instagram image prompt."
+                final_package['instagram_static_image_prompt'] = "Error: Missing source for Instagram static image prompt."
+                final_package['instagram_video_ready_image_prompt'] = "Error: Missing source for Instagram video-ready image prompt."
                 logging.warning("Missing source_title or source_body for image prompt generation.")
         else:
             final_package['image_prompt'] = "Error: Blog image prompt LLM client not available."
-            final_package['instagram_image_prompt'] = "Error: Instagram image prompt LLM client not available."
+            final_package['instagram_static_image_prompt'] = "Error: Instagram static image prompt LLM client not available."
+            final_package['instagram_video_ready_image_prompt'] = "Error: Instagram video-ready image prompt LLM client not available."
             logging.error("Skipping image prompt generation; llm_image_prompt_client was None.")
         
-        # --- Conditionally Generate Instagram Texts ---
-        # Only run this section if include_instagram_texts is True
-        if include_instagram_texts:
+        # --- NEW: Perform blog analysis for Instagram and Iranian video if needed ---
+        derived_insta_inputs = {}
+        if (include_instagram_texts or include_iranian_video_prompt) and llm_instagram_text_client and blog_package_content.get('content'):
             try:
-                logging.info("Starting Instagram text analysis and generation...")
-                # Step 1: Analyze blog content to derive inputs for Instagram texts
+                logging.info("Starting blog analysis for Instagram/Iranian video inputs...")
                 derived_insta_inputs = await analyze_blog_for_instagram_inputs(
                     llm_client=llm_instagram_text_client, 
                     blog_title=blog_package_content.get('title'),
                     blog_content=blog_package_content.get('content')
                 )
-
                 if derived_insta_inputs.get("error"):
-                    logging.error(f"Error during Instagram blog analysis: {derived_insta_inputs.get('error')}")
-                    # Optionally set error in result_package if needed
+                    logging.error(f"Error during blog analysis for Instagram/Iranian video: {derived_insta_inputs.get('error')}")
+                    # Preserve error in derived_insta_inputs for subsequent checks
                 else:
-                    logging.info("Blog analysis for Instagram complete.")
-                    
-                    # Step 2: Generate Instagram title and caption using derived inputs
+                    logging.info("Blog analysis for Instagram/Iranian video complete.")
+            except Exception as analysis_e:
+                logging.exception(f"An unexpected error occurred during blog analysis: {analysis_e}")
+                derived_insta_inputs = {"error": f"Unexpected error during blog analysis: {analysis_e}"}
+        else:
+            logging.info("Blog analysis for Instagram/Iranian video skipped (not requested or missing data/LLM). ")
+            derived_insta_inputs = {"error": "Blog analysis skipped or missing data."}
+
+
+        # --- Conditionally Generate Instagram Texts ---
+        # Only run this section if include_instagram_texts is True
+        if include_instagram_texts:
+            try:
+                logging.info("Starting Instagram text generation...")
+                # Use derived_insta_inputs from the common analysis block
+                if not derived_insta_inputs.get("error") and derived_insta_inputs.get("derived_blog_topic"):
                     insta_texts = await generate_instagram_post_texts(
                         llm_client=llm_instagram_text_client, 
                         derived_blog_topic=derived_insta_inputs.get("derived_blog_topic"),
@@ -355,19 +370,16 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                     
                     if insta_texts.get("error"):
                         logging.error(f"Error during Instagram text generation: {insta_texts.get('error')}")
-                        # Set error values for Instagram texts when entire process fails
                         final_package['instagram_post_title'] = f"Error: Instagram text generation failed - {insta_texts.get('error')}"
                         final_package['instagram_post_caption'] = f"Error: Instagram text generation failed - {insta_texts.get('error')}"
                         final_package['instagram_video_prompt'] = "Instagram video prompt not generated (Instagram texts disabled by user)."
                     else:
                         logging.info("Instagram text generation complete.")
-                        # Add generated Instagram texts to the final result package
                         final_package['instagram_post_title'] = insta_texts.get('instagram_post_title')
                         final_package['instagram_post_caption'] = insta_texts.get('instagram_post_caption')
                         
-                        # --- Generate Instagram Video Prompt ---
-                        # Generate video prompt using the Instagram caption that was just created
-                        if llm_image_prompt_client and source_title and source_body and insta_texts.get('instagram_post_caption'):
+                        # --- Generate Instagram Video Prompt (depends on Insta texts) ---
+                        if llm_image_prompt_client and insta_texts.get('instagram_post_caption'): # Simplified check
                             try:
                                 logging.info("Starting Instagram video prompt generation...")
                                 instagram_video_prompt = await generate_instagram_video_prompt(
@@ -382,22 +394,26 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                                 logging.exception(f"Error during Instagram video prompt generation: {video_prompt_e}")
                                 final_package['instagram_video_prompt'] = f"Error generating Instagram video prompt: {video_prompt_e}"
                         else:
-                            final_package['instagram_video_prompt'] = "Error: Missing required data for Instagram video prompt generation."
-                            logging.warning("Skipping Instagram video prompt generation due to missing requirements.")
+                            final_package['instagram_video_prompt'] = "Error: Missing required data for Instagram video prompt generation (Instagram texts enabled)."
+                            logging.warning("Skipping Instagram video prompt generation due to missing requirements (Instagram texts enabled).")
+                else:
+                    final_package['instagram_post_title'] = "Error: Instagram text generation skipped due to blog analysis error or missing data."
+                    final_package['instagram_post_caption'] = "Error: Instagram text generation skipped due to blog analysis error or missing data."
+                    final_package['instagram_video_prompt'] = "Instagram video prompt not generated (blog analysis failed or texts disabled)."
+                    logging.warning("Instagram text generation skipped due to blog analysis error or missing data.")
 
             except Exception as insta_gen_e:
                 logging.exception(f"An unexpected error occurred during Instagram text generation: {insta_gen_e}")
-                # Set error values for Instagram texts when entire process fails
                 final_package['instagram_post_title'] = f"Error: Instagram text generation failed - {insta_gen_e}"
                 final_package['instagram_post_caption'] = f"Error: Instagram text generation failed - {insta_gen_e}"
                 final_package['instagram_video_prompt'] = "Instagram video prompt not generated (Instagram texts disabled by user)."
 
-        # If Instagram texts were not generated because include_instagram_texts is False, set video prompt error
+        # If Instagram texts were not generated because include_instagram_texts is False, set default error messages
         if not include_instagram_texts:
             final_package['instagram_post_title'] = "Instagram post title not generated (disabled by user)."
             final_package['instagram_post_caption'] = "Instagram post caption not generated (disabled by user)."
             final_package['instagram_video_prompt'] = "Instagram video prompt not generated (Instagram texts disabled by user)."
-
+                
         # --- Conditionally Generate Instagram Story Teasers ---
         # Only run this section if include_story_teasers is True and LLM client is available and blog content is available
         if include_story_teasers and llm_instagram_text_client and blog_package_content.get('content'):
@@ -407,13 +423,11 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
                     llm_client=llm_instagram_text_client,
                     blog_content=blog_package_content.get('content') # Use the generated blog content
                 )
-                # Add story teasers to the final package
                 final_package['instagram_story_teasers'] = story_teasers_result
                 logging.info("Instagram Story teaser generation complete.")
 
             except Exception as insta_story_gen_e:
                 logging.exception(f"An unexpected error occurred during Instagram Story teaser generation: {insta_story_gen_e}")
-                # Optionally set a general error in final_package for story teasers
                 final_package['instagram_story_teasers'] = {"error": f"Error generating Instagram Story teasers: {insta_story_gen_e}"}
 
         elif not include_story_teasers:
@@ -425,31 +439,36 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
              logging.warning("Skipping Instagram Story teaser generation; blog content not available.")
              final_package['instagram_story_teasers'] = {"error": "Blog content not available for story teasers."}
 
-        # --- Always attempt to generate Instagram Video Prompt if it was not generated above ---
-        if not final_package.get('instagram_video_prompt') or 'not generated' in final_package.get('instagram_video_prompt', '') or final_package.get('instagram_video_prompt', '').startswith('Error'):
-            if llm_image_prompt_client and source_title and source_body:
-                try:
-                    fallback_caption = final_package.get('instagram_post_caption', '')
-                    logging.info("Attempting fallback Instagram video prompt generation...")
-                    fallback_video_prompt = await generate_instagram_video_prompt(
-                        llm_client=llm_image_prompt_client,
-                        header=source_title,
-                        description=source_body,
-                        instagram_caption=fallback_caption
-                    )
-                    final_package['instagram_video_prompt'] = fallback_video_prompt
-                    logging.info("Fallback Instagram video prompt generation successful.")
-                except Exception as fallback_video_e:
-                    logging.exception(f"Fallback Instagram video prompt generation failed: {fallback_video_e}")
-                    final_package['instagram_video_prompt'] = f"Error generating fallback Instagram video prompt: {fallback_video_e}"
-            else:
-                logging.warning("Cannot perform fallback video prompt generation due to missing LLM client or source data.")
+        # --- NEW: Conditionally Generate Iranian Farsi Video Prompt ---
+        # Use derived_insta_inputs for blog_topic and key_takeaways
+        if include_iranian_video_prompt and llm_instagram_text_client and not derived_insta_inputs.get("error") and derived_insta_inputs.get("derived_blog_topic"):
+            try:
+                logging.info("Starting Iranian Farsi video prompt generation...")
+                iranian_farsi_video_prompt = await generate_iranian_farsi_video_prompt(
+                    llm_client=llm_instagram_text_client,
+                    blog_topic=derived_insta_inputs.get("derived_blog_topic"), # Use derived topic
+                    key_takeaways=derived_insta_inputs.get("derived_key_takeaways") # Use derived key takeaways
+                )
+                final_package['iranian_farsi_video_prompt'] = iranian_farsi_video_prompt
+                logging.info("Iranian Farsi video prompt generation complete.")
+            except Exception as iranian_video_e:
+                logging.exception(f"Error during Iranian Farsi video prompt generation: {iranian_video_e}")
+                final_package['iranian_farsi_video_prompt'] = f"Error generating Iranian Farsi video prompt: {iranian_video_e}"
+        elif not include_iranian_video_prompt:
+            logging.info("Iranian Farsi video prompt generation skipped by user.")
+        elif not llm_instagram_text_client:
+            logging.warning("Skipping Iranian Farsi video prompt generation; llm_instagram_text_client was None.")
+            final_package['iranian_farsi_video_prompt'] = "Error: LLM client not available for Iranian Farsi video prompt."
+        elif derived_insta_inputs.get("error") or not derived_insta_inputs.get("derived_blog_topic"):
+            logging.warning("Skipping Iranian Farsi video prompt generation; blog analysis failed or missing data.")
+            final_package['iranian_farsi_video_prompt'] = "Error: Blog analysis data not available for Iranian Farsi video prompt."
 
         await save_output_to_file_async(
             raw_blog_output=blog_llm_raw_output,
             raw_image_prompt=blog_thumbnail_image_prompt, # Use the initialized variable
-            raw_instagram_post_image_prompt=instagram_post_image_prompt, # Use the initialized variable
-            raw_instagram_video_prompt=final_package.get('instagram_video_prompt', instagram_video_prompt), # Add video prompt
+            raw_instagram_post_image_prompt=final_package.get('instagram_static_image_prompt'), # Pass the static image prompt
+            raw_instagram_video_prompt=final_package.get('instagram_video_ready_image_prompt'), # Pass the video-ready image prompt
+            raw_iranian_farsi_video_prompt=final_package.get('iranian_farsi_video_prompt'), # NEW: Pass the Iranian Farsi video prompt
             parsed_package=final_package,
             slug=final_package.get('slug', 'no-slug-blog-pkg'),
             pantry_id=pantry_api_id # Pass pantry_id
@@ -462,8 +481,9 @@ Suggest a total of **up to 7 tags** based on the source title and body, chosen f
         await save_output_to_file_async(
             raw_blog_output=blog_llm_raw_output, 
             raw_image_prompt=blog_thumbnail_image_prompt, # Ensure these are passed even on early error
-            raw_instagram_post_image_prompt=instagram_post_image_prompt,
-            raw_instagram_video_prompt=final_package.get('instagram_video_prompt', instagram_video_prompt), # Add video prompt
+            raw_instagram_post_image_prompt=final_package.get('instagram_static_image_prompt', "Error during generation"), # Pass the static image prompt
+            raw_instagram_video_prompt=final_package.get('instagram_video_ready_image_prompt', "Error during generation"), # Pass the video-ready image prompt
+            raw_iranian_farsi_video_prompt=final_package.get('iranian_farsi_video_prompt', "Error during generation"), # NEW: Pass the Iranian Farsi video prompt
             error=str(e), 
             slug='error-blog-pkg',
             pantry_id=pantry_api_id_error # Pass pantry_id
@@ -1036,6 +1056,67 @@ Adopt the expert 'Hooshews' voice: authoritative, deeply empathetic, and a maste
 
     return story_teasers
 # --- END OF Instagram Story Teaser Function ---
+
+# --- NEW: Independent Iranian Farsi Video Prompt Generation Function ---
+async def generate_iranian_farsi_video_prompt(
+    llm_client: ChatOpenAI,
+    blog_topic: str,
+    key_takeaways: list[str]
+) -> str:
+    """
+    Generates an independent video prompt focusing on Iranian locations and Farsi dialogue,
+    based on a provided blog summary, for models like Veo 3.
+    """
+    logging.info("Starting independent Iranian Farsi video prompt generation...")
+
+    # --- System Prompt for Iranian Farsi Video Prompt ---
+    system_prompt_iranian_video = """You are an expert AI video prompt engineer, specializing in crafting prompts that yield highly localized, culturally authentic, and linguistically accurate video content, specifically for models like Google Veo 3 that support native audio and character consistency. Your goal is to generate a single, concise video prompt that includes Iranian locations and Farsi dialogue.
+
+**Key Principles for this Prompt:**
+1.  **Cultural Authenticity:** The scene, characters, and dialogue must feel genuinely Iranian.
+2.  **Location Sensitivity:** Explicitly name well-known Iranian places (e.g., Tehran, Grand Bazaar of Tehran, Valiasr Street) to guide the AI model towards accurate visual and cultural context.
+3.  **Farsi Dialogue:** Strictly enforce that all character dialogue must be in Farsi.
+4.  **Conciseness:** The final prompt should be a single, flowing string, highly descriptive but without unnecessary verbose explanations or bullet points outside the prompt itself.
+5.  **Focus:** The video should be a short scene (typically 3-8 seconds) with one or two characters engaged in a brief, natural conversation, derived from the essence of the provided blog summary.
+
+**Output Format:**
+Provide ONLY the generated video prompt string. Do NOT include any JSON, markdown code fences, or explanatory text before or after the prompt. The prompt must start with "Scene:".
+
+**Example Structure (follow this closely):**
+`Scene: [General Iranian location, e.g., Tehran, Iran]. [Detailed description of the scene and characters, e.g., Two friends, Ali and Sara, are walking in the bustling [Specific Iranian location, e.g., Grand Bazaar of Tehran or Valiasr Street]]. All dialogue must be in Farsi. [Character 1 Name], [description of Character 1's state or action, e.g., a young man, says with excitement]: "[Dialogue of Character 1 in Farsi]" [Character 2 Name], [description of Character 2's state or action, e.g., a cheerful woman, replies with a laugh]: "[Dialogue of Character 2 in Farsi]"`
+
+**Tone for Scene and Dialogue:** Professional, engaging, and reflective of a real, humanized interaction. The dialogue should be fluent and natural Persian.
+"""
+
+    # --- Human Prompt for Iranian Farsi Video Prompt (Task-Specific) ---
+    key_takeaways_formatted = "\n".join([f"    * {point}" for point in key_takeaways])
+    human_prompt_iranian_video = f"""
+Generate a short video prompt for an AI video generation model like Veo 3. The video should feature a brief conversation between one or two people in an Iranian setting, based on the following blog topic and key takeaways. Ensure all dialogue is in Farsi and the location is authentically Iranian.
+
+**Blog Topic:** {blog_topic}
+
+**Key Takeaways from Blog Post:**
+{key_takeaways_formatted}
+
+**Strictly follow the example structure for the prompt:**
+`Scene: [General Iranian location, e.g., Tehran, Iran]. [Detailed description of the scene and characters, e.g., Two friends, Ali and Sara, are walking in the bustling [Specific Iranian location, e.g., Grand Bazaar of Tehran or Valiasr Street]]. All dialogue must be in Farsi. [Character 1 Name], [description of Character 1's state or action, e.g., a young man, says with excitement]: "[Dialogue of Character 1 in Farsi]" [Character 2 Name], [description of Character 2's state or action, e.g., a cheerful woman, replies with a laugh]: "[Dialogue of Character 2 in Farsi]"`
+
+Ensure the dialogue is concise, natural, and reflects the main theme or a key takeaway from the blog.
+"""
+    messages = [
+        SystemMessage(content=system_prompt_iranian_video),
+        HumanMessage(content=human_prompt_iranian_video)
+    ]
+
+    try:
+        logging.info("Invoking LLM for Iranian Farsi Video Prompt...")
+        response = await llm_client.ainvoke(messages)
+        prompt_output = response.content.strip()
+        logging.info("Iranian Farsi Video Prompt LLM invocation successful.")
+        return prompt_output
+    except Exception as e:
+        logging.exception(f"Error during Iranian Farsi Video Prompt generation: {e}")
+        return f"Error generating Iranian Farsi video prompt: {e}"
 
 # Utility function to save raw LLM output and any errors to a file
 # (Assuming save_output_to_file is defined elsewhere, e.g., in file_utils.py)

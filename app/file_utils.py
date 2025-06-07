@@ -17,6 +17,7 @@ async def save_output_to_file_async(
     raw_image_prompt=None, 
     raw_instagram_post_image_prompt=None, 
     raw_instagram_video_prompt=None,  # Added for video prompt
+    raw_iranian_farsi_video_prompt=None, # NEW: Added for Iranian Farsi video prompt
     parsed_package=None, 
     error=None, 
     slug='output',
@@ -69,6 +70,7 @@ async def save_output_to_file_async(
         "raw_image_prompt_llm_output": raw_image_prompt,
         "raw_instagram_post_image_prompt": raw_instagram_post_image_prompt,
         "raw_instagram_video_prompt": raw_instagram_video_prompt,
+        "raw_iranian_farsi_video_prompt": raw_iranian_farsi_video_prompt, # NEW: Added for Iranian Farsi video prompt
         "final_parsed_package": parsed_package,
         "pantry_basket_name": None # Will be populated if saved to Pantry
     }

@@ -1,0 +1,68 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Cursor AI Assistant Rules
+
+## Requirements:
+- **High-Level Overview First**: Before breaking any requested change or task into discrete steps, provide:
+  1. **Overview** – a concise summary of what you intend to accomplish.
+  2. **Mind-Map** – a textual, hierarchical outline of all sub-tasks and relationships.
+  3. **Roadmap** – a sequential list of each planned step with brief descriptions.
+- Always ask for my explicit “yes” before executing any actual step.
+- After each step, summarize completion and ask for permission to proceed to the next step.
+- If I respond “no” or request a modification at any point, pause, adjust according to feedback, and then re-present the modified overview/mind-map/roadmap before continuing.
+- Maintain clear numbering so steps are never skipped or repeated.
+
+## Task:
+- For any code generation, refactoring, or file operations I request, follow this protocol:
+  1. **Overview**: Write a short paragraph summarizing the entire task.
+  2. **Mind-Map**: Present a textual hierarchy (e.g., bullets/indentation) that shows all major sub-tasks and how they relate.
+  3. **Roadmap**: List each step in order (e.g., “Step 1: …”, “Step 2: …”, etc.) with one-line descriptions.
+  4. Ask: “May I proceed with Step 1?”  
+     - Wait for my “yes” (or “no/cancel”) before doing anything.
+  5. On “yes,” execute Step 1.
+  6. Summarize Step 1 completion in one or two sentences. Then ask: “Ready for Step 2?”
+  7. Repeat steps 5–6 until all steps in the Roadmap are complete.
+  8. After the final step, provide a **Final Summary** of all actions taken, including any file changes.
+
+## Things you shouldn’t do to avoid code corruption:
+- ❌ Do NOT perform any code edits before presenting the Overview, Mind-Map, and Roadmap.
+- ❌ Do NOT merge multiple steps into one; each logical action must be its own Step X.
+- ❌ Do NOT overwrite existing files or functions without my explicit “yes” for that specific step.
+- ❌ Do NOT skip any confirmations—waiting for my permission is mandatory.
+- ❌ Do NOT move or delete code blocks outside of a confirmed step.
+- ❌ Do NOT assume you can cut corners; if uncertain, ask clarifying questions.
+
+## Explanation:
+Whenever you (Cursor’s AI) receive a new instruction, you must first think:  
+> “What is the full scope? Which parts depend on which? How can I break this into safe, incremental actions?”
+
+1. **Overview** (e.g., “We need to migrate all usages of `double` to `BigDecimal` in `calculateTotal()` and update related tests.”)  
+2. **Mind-Map** (e.g.,  
+   - Migrate `calculateTotal()` signature  
+     - Change input types  
+     - Change return type  
+     - Adjust internal calculations  
+   - Update call sites  
+     - Locate all calls  
+     - Modify arguments  
+   - Update tests  
+     - Identify affected tests  
+     - Refactor assertions  
+   )  
+3. **Roadmap** (e.g.,  
+   - Step 1: Analyze `calculateTotal()` existing signature and behavior.  
+   - Step 2: Modify `calculateTotal()` method signature to use `BigDecimal`.  
+   - Step 3: Update all call sites in code.  
+   - Step 4: Adjust unit tests related to `calculateTotal()`.  
+   - Step 5: Run tests and verify correctness.  
+   - Step 6: Final review and cleanup.  
+   )
+
+Only after I reply “yes” to Step 1 should you implement Step 1. After finishing, confirm with me and ask for Step 2, and so on.
+
+Following these rules guarantees you’ll never perform an unwanted change in bulk and prevents accidental code corruption. Always treat each “Step X” as a standalone mini-task that requires explicit consent before proceeding.
+
+

@@ -115,6 +115,7 @@ def main():
         # Add checkboxes for optional generations
         include_instagram_posts = st.checkbox("Include Instagram Post Texts", value=True, help="Generate viral title and caption for Instagram based on the blog content.")
         include_story_teasers = st.checkbox("Include Instagram Story Teasers", value=True, help="Generate Farsi teaser snippets for Instagram Stories.")
+        include_iranian_video_prompt = st.checkbox("Include Iranian Farsi Video Prompt", value=False, help="Generate a short video prompt with Iranian context and Farsi dialogue.")
 
         if st.button("✨ Generate Persian Blog Post Package"):
             if not source_name or not source_title or not source_body or not source_url:
@@ -130,7 +131,8 @@ def main():
                         source_name=source_name,
                         source_url=source_url,
                         include_instagram_texts=include_instagram_posts, # Pass the checkbox state for post
-                        include_story_teasers=include_story_teasers # Pass the checkbox state for story
+                        include_story_teasers=include_story_teasers, # Pass the checkbox state for story
+                        include_iranian_video_prompt=include_iranian_video_prompt # NEW: Pass the checkbox state
                     ))
                 st.session_state.generation_result = result_package 
                 if 'uploaded_data' in st.session_state: del st.session_state.uploaded_data # Clear uploaded data if new generation occurs
@@ -211,29 +213,13 @@ This section contains all components needed for creating engaging Instagram cont
                     
                     st.divider()
                     st.markdown("### Image Generation")
-                    st.markdown("**پرامپت تصویر اینستاگرام (برای تولید عکس پست):**")
-                    st.text_area("", value=result_package.get('instagram_image_prompt', 'N/A'), height=150, disabled=True, key="insta_img_prompt_disp")
+                    st.markdown("**پرامپت تصویر اینستاگرام (عکس ثابت):**")
+                    st.text_area("", value=result_package.get('instagram_static_image_prompt', 'N/A'), height=150, disabled=True, key="insta_static_img_prompt_disp")
+                    st.info("📸 **Image Type: Static Image Prompt** - Optimized for single-frame visual impact. Focuses on strong composition and focal points. Perfect for static posts. Emphasizes immediate visual appeal. Designed for maximum engagement without motion.")
                     
-                    # Show which type of image prompt was generated with more detailed explanation
-                    if result_package.get('instagram_image_prompt', 'N/A') != 'N/A':
-                        if result_package.get('instagram_video_prompt', 'N/A') != 'N/A' and 'not generated' not in result_package.get('instagram_video_prompt', ''):
-                            st.info("""
-📹 **Image Type: Video-Ready Image Prompt**
-- Optimized for animation with separable layers
-- Includes elements designed for movement
-- Perfect for video transformation
-- Contains depth and parallax-ready components
-- Includes atmospheric elements for animation
-                            """)
-                        else:
-                            st.info("""
-📸 **Image Type: Static Image Prompt**
-- Optimized for single-frame visual impact
-- Focuses on strong composition and focal points
-- Perfect for static posts
-- Emphasizes immediate visual appeal
-- Designed for maximum engagement without motion
-                            """)
+                    st.markdown("**پرامپت تصویر اینستاگرام (آماده برای ویدیو):**")
+                    st.text_area("", value=result_package.get('instagram_video_ready_image_prompt', 'N/A'), height=150, disabled=True, key="insta_video_ready_img_prompt_disp")
+                    st.info("📹 **Image Type: Video-Ready Image Prompt** - Optimized for animation with separable layers. Includes elements designed for movement. Perfect for video transformation. Contains depth and parallax-ready components. Includes atmospheric elements for animation.")
                     
                     st.divider()
                     st.markdown("### Video Generation")
@@ -267,6 +253,18 @@ This section contains all components needed for creating engaging Instagram cont
                 st.divider()
                 st.success("Text generation complete!")
                 st.divider()
+
+                # NEW: Display Iranian Farsi Video Prompt if generated
+                with st.expander("🎥 پرامپت ویدئو فارسی-ایرانی (مستقل)", expanded=True):
+                    iranian_video_prompt = result_package.get('iranian_farsi_video_prompt')
+                    if iranian_video_prompt and not iranian_video_prompt.startswith("Error"):
+                        st.markdown("**پرامپت نهایی برای تولید ویدئو:**")
+                        st.code(iranian_video_prompt, language=None)
+                        st.info("این پرامپت برای تولید ویدئوهای کوتاه با فضای ایرانی و دیالوگ فارسی، مستقل از عکس اینستاگرام است.")
+                    elif iranian_video_prompt and iranian_video_prompt.startswith("Error"):
+                        st.error(f"Error generating Iranian Farsi video prompt: {iranian_video_prompt}")
+                    else:
+                        st.info("پرامپت ویدئوی فارسی-ایرانی تولید نشد. (تیک مربوطه را فعال کنید یا خطا رخ داده است.)")
 
                 # Display Instagram Story Teasers if generated
                 with st.expander("📸 اینستاگرام: استوری تیزرها", expanded=True):
