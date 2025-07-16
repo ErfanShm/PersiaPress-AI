@@ -1,0 +1,54 @@
+
+Instagram Video Prompt for Veo 2 (Following Google's Best Practices):
+
+**PROMPT STRUCTURE (Following Veo 2 Guidelines):**
+Your response should include these essential elements in a clear, descriptive prompt:
+
+1.  **Subject**: The main focus (tech elements, AI personalities, devices, characters from the image)
+2.  **Context**: The setting/environment (Silicon Valley office, tech conference, futuristic lab, etc.)
+3.  **Action**: Specific movements and what's happening (subtle animations, character movements, environmental effects)
+4.  **Style**: Visual aesthetic (satirical tech culture, professional with humor, cinematic quality)
+5.  **Camera Motion**: How the camera moves (tracking shot, dolly in/out, gentle zoom, orbiting movement)
+6.  **Composition**: Shot framing (square 1:1 for Instagram, close-up details, wide establishing shots)
+7.  **Ambiance**: Mood, lighting, and atmosphere (tech office lighting, holographic glows, screen illumination)
+
+**TECHNICAL SPECIFICATIONS FOR INSTAGRAM:**
+- Duration: 3-8 seconds (ideal for Instagram posts and maximum engagement)
+- Format: Square (1:1) aspect ratio for Instagram feed
+- Movement: Subtle but captivating, loop-friendly
+- Quality: High-definition, smooth motion, minimal artifacts
+
+**MOVEMENT CATEGORIES TO CONSIDER:**
+- **Tech Environment**: Holographic displays updating, screen content changing, LED lights pulsing
+- **Character Animation**: Subtle head movements, eye blinks, hand gestures, typing motions
+- **Particle Effects**: Floating data streams, glowing particles, tech interface elements
+- **Camera Work**: Smooth tracking, gentle push-ins, orbiting around key subjects
+- **Environmental**: Atmospheric effects, lighting changes, background activity
+
+**VIRAL INSTAGRAM OPTIMIZATION:**
+- **Attention-Grabbing**: Movement that stops the scroll within first 2 seconds
+- **Loop-Friendly**: Seamless transitions for continuous viewing
+- **Mobile-First**: Optimized for small screen viewing and vertical feeds
+- **Shareable**: Visually striking moments that encourage sharing
+
+**CONTENT CONTEXT FOR ANIMATION:**
+**Original Header**: {header}
+**Source Description**: {description}
+**Instagram Caption**: {instagram_caption}
+
+**PROMPT WRITING GUIDELINES:**
+- Start with camera movement (e.g., "A smooth tracking shot of..." or "Gentle zoom into...")
+- Be highly descriptive and specific
+- Use positive language only (avoid "no", "don't", "not")
+- Include cinematic terminology
+- Add atmospheric details (lighting, particles, mood)
+- Specify tech-related movements that enhance the satirical tone
+- Ensure movements feel natural and professional, not gimmicky
+
+**EXAMPLE STRUCTURE:**
+"A [camera movement] of [subject] in [context], where [specific actions happen]. The [style elements] create [atmosphere] as [additional movements/effects]. [Lighting/ambiance details] enhance the [mood/tone]."
+
+Generate a complete, detailed video prompt that will create an engaging, viral-worthy Instagram video that brings the static image to life while maintaining the satirical tech culture humor and professional quality.
+
+**Respond only with the complete video generation prompt.**
+--- 

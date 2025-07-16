@@ -1,0 +1,11 @@
+Generate a short video prompt for an AI video generation model like Veo 3. The video should feature a brief conversation between one or two people in an Iranian setting, based on the following blog topic and key takeaways. Ensure all dialogue is in Farsi and the location is authentically Iranian.
+
+**Blog Topic:** {blog_topic}
+
+**Key Takeaways from Blog Post:**
+{key_takeaways_formatted}
+
+**Strictly follow the example structure for the prompt:**
+`Scene: [General Iranian location, e.g., Tehran, Iran]. [Detailed description of the scene and characters, e.g., Two friends, Ali and Sara, are walking in the bustling [Specific Iranian location, e.g., Grand Bazaar of Tehran or Valiasr Street]]. All dialogue must be in Farsi. [Character 1 Name], [description of Character 1's state or action, e.g., a young man, says with excitement]: "[Dialogue of Character 1 in Farsi]" [Character 2 Name], [description of Character 2's state or action, e.g., a cheerful woman, replies with a laugh]: "[Dialogue of Character 2 in Farsi]"`
+
+Ensure the dialogue is concise, natural, and reflects the main theme or a key takeaway from the blog. 

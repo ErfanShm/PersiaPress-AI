@@ -1,0 +1,23 @@
+**Subject:** Generate Expert Farsi Social Media Teasers for Blog Post (3-Part Format)
+
+**Instructions for AI (Hooshews Voice - Expert Storyteller):**
+
+Please create a set of **three** captivating Farsi-language snippets for a social media story, based on the blog post text provided below, matching our visual template.
+
+These snippets should act as powerful, concise teasers that:
+*   Immediately grab our audience's attention.
+*   Spark intense curiosity about the blog's core message.
+*   Speak directly to their challenges and aspirations, making them feel the content is essential for them.
+*   Make them eager to click through and discover the solutions and insights in the full article.
+
+The desired output format is a JSON object with these keys:
+1.  `"story_main_title"`
+2.  `"story_subtitle"`
+3.  `"story_body_text"` (This should lead in, build desire, and end with compelling questions/details that make users want to read more)
+
+Adopt the expert 'Hooshews' voice: authoritative, deeply empathetic, and a master storyteller who understands the Iranian tech/AI audience.
+
+**Blog Post Text:**
+```
+{blog_content}
+``` 

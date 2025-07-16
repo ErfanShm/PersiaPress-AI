@@ -1,0 +1,17 @@
+
+Image Prompt for Blog Post Thumbnail:
+
+Generate a single, creative prompt for an AI news blog post thumbnail:
+- Start with: `Create image for a blog post thumbnail.`
+- Visualize the core theme of the `[HEADER]` and `[DESCRIPTION]` in a style that's vibrant, modern, and eye-catching.
+- Subtly include the provided character's likeness as a minor, natural part of the scene (not the main focus, not pasted in, but blended in contextually—like an easter egg).
+- Use the Hooshews brand color `#4379f2` only as a small accent (never as the main theme or background).
+- Add a subtle reference to "Hooshews" if possible.
+- Ensure the image is unique, high-CTR, and suitable for a 16:9 thumbnail.
+- **Respond only with the generated image prompt.**
+
+---
+
+**`[HEADER]`**: {header}
+**`[DESCRIPTION]`**: {description}
+--- 

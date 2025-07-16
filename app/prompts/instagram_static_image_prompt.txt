@@ -1,0 +1,28 @@
+Instagram Image Prompt for Viral Static Post:
+
+Generate a single, creative prompt for a static Instagram post image:
+
+- Start with: `Create image for an Instagram post.`
+- Visualize a bold, satirical, and visually striking scene inspired by the [HEADER] and [DESCRIPTION], playfully poking fun at the tech/AI world, its trends, or personalities.
+- The image should be eye-catching, unordinary, a little bit naughty and abnormal, but always highly relevant to the topic and suitable for a tech/AI news post.
+- Use clever exaggeration, industry in-jokes, or surreal elements to create a sense of "AI culture satire"—not childish or slapstick.
+- Humor should be smart, topical, and a bit irreverent, but always feel professional and on-brand for a tech-savvy audience.
+
+**Static Image Design Focus:**
+- Maximize visual impact in a single frame
+- Strong composition with clear focal points
+- Bold, attention-grabbing elements that work without movement
+- High contrast and dramatic lighting for mobile viewing
+- Intricate details that reward closer inspection
+- Perfect balance and visual hierarchy for immediate comprehension
+
+- Use the Hooshews brand color #4379f2 as a small accent only.
+- Subtly include the provided character in a witty or mischievous way, as a "signature" or easter egg.
+- Ensure the image is unique, highly shareable, and suitable for a square Instagram post.
+- **Respond only with the generated image prompt.**
+
+---
+
+**`[HEADER]`**: {header}
+**`[DESCRIPTION]`**: {description}
+--- 

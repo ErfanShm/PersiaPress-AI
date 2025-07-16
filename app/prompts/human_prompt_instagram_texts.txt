@@ -1,0 +1,69 @@
+**Please provide the following two pieces of text based on the blog post details I provide below:**
+
+**Blog Post Details (AI-Derived):**
+* **Blog Post Topic/Main Subject:** {derived_blog_topic}
+* **Key Takeaways/Summary of Blog Post (3-5 bullet points):**
+{takeaways_formatted}
+* **Specific Call-to-Action Word (for comments):** {derived_cta_word}
+* **Core Emotion/Reaction you want to evoke with the post:** {derived_core_emotion}
+
+---
+
+**1. Viral Post Title (for the post's visual/thumbnail):**
+
+* **Language:** Persian
+* **Length:** Super short (ideally 3-7 words).
+* **Style:** Explosively viral. Make it bold, playful, and a bit "naughty" or highly provocative in a clever way (think intriguing double meanings, not offensive). It must spark immediate curiosity or amazement and make people *need* to know more.
+* **Hook:** Should be an irresistible hook that makes people stop scrolling.
+* **Wordplay:** Use clever wordplay, a surprising twist, or a challenging statement if possible.
+* **Impact:** Aim for something that makes people laugh, blush slightly, feel mischievous, or be utterly amazed.
+* **Emojis:** Add 1-2 relevant emojis that enhance the title's vibe.
+
+---
+
+**2. Instagram Post Caption (Stylized for Readability & Engagement):**
+
+* **Language:** Persian
+* **Overall Style:** Highly readable, engaging, and visually broken up for Instagram. Think short, punchy lines and mini-paragraphs. Use emojis strategically for emphasis and visual appeal.
+* **Tone (Reiteration for Emphasis):** Professional, engaging, and approachable. Maintain a tone that reflects expertise and trustworthiness, while still being interesting and inviting for the "hooshews" AI community. Avoid overly casual, slangy, or attention-seeking language. Humor, if used, should be subtle, intelligent, and witty, aligning with a tech-savvy audience.
+
+* **Structure & Formatting Guidelines:**
+    *   **Short Lines:** Keep most lines relatively short. Use single newlines (`\n`) frequently to create visual breaks and improve scannability.
+    *   **Mini-Paragraphs/Stanzas:** Group related sentences into small blocks of 1-3 lines, separated by a single newline.
+    *   **Strategic Emojis:**
+        *   Use emojis sparingly and purposefully. They should only be used if they genuinely enhance the message or visual appeal, not as mere decoration. Aim for a maximum of 1-2 well-placed emojis in the entire caption, if any. The strength of the caption should come from compelling copy, not emoji overuse.
+    *   **Hook:** Start with a strong, intriguing hook (can be a question or a bold statement).
+    *   **Summary:** Briefly summarize the core topic (using the AI-Derived Key Takeaways) in an exciting, digestible way, broken into these short, stylized lines.
+    *   **Engagement Questions:** Weave in 1-2 thought-provoking questions, each perhaps on its own line or as a short stanza.
+    *   **Call-to-Action (CTA):**
+        *   Make the CTA very clear and visually distinct. It could be its own stanza.
+        *   Instruct users to comment with **{derived_cta_word}** to receive the full blog link in their DMs.
+        *   Mention the link in the "hooshews" page bio.
+    *   **Hashtags:**
+        *   Place all hashtags at the very end of the caption, on their own line(s) after any other text.
+        *   Provide exactly 5 hashtags: 3 highly relevant Persian and 2 highly relevant English, each starting with '#'.
+        *   **Selection Strategy:** These hashtags are crucial for increasing visibility, maximizing reach, and enhancing discoverability. Aim for a strategic mix:
+            *   Include some **popular/broader** Persian hashtags for wider reach.
+            *   Include some **niche-specific** Persian and English hashtags directly related to the post's core AI/tech topic for targeted engagement.
+            *   Consider using a **branded hashtag** like #hooshews or #هوشیوز as one of the English or Persian tags if it fits naturally within the count.
+            *   If relevant and suitable for the content, try to align one or two hashtags with **trending topics** in the AI/tech space (but prioritize relevance over chasing trends).
+        *   Ensure hashtags are space-separated if on the same line, or on new lines.
+
+* **Example Snippet of Desired Formatting (Illustrative - ADAPT THE STRUCTURE AND EMOJI PLACEMENT TO THE ACTUAL CONTENT, but follow this visual style closely. Note the reduced emoji usage in this example):**
+    می‌گن تو iOS 19، هوش مصنوعی قراره با باتری آیفون... همکاری کنه؟
+
+    شایعه‌ جدید در دنیای اپل:
+    اپل ممکنه در iOS 19 از AI برای بهینه‌سازی عمر باتری آیفون استفاده کنه.
+
+    این هوش مصنوعی یاد می‌گیره چطور از گوشی‌تون استفاده می‌کنید و بر اساس اون، مصرف باتری رو هوشمندانه مدیریت می‌کنه.
+    این خبر از منابع معتبری مثل بلومبرگ منتشر شده و به نظر می‌رسه با Apple Intelligence در ارتباط باشه. 🤖
+
+    اما سوال اصلی اینه:
+    آیا این یک پیشرفت واقعی در هوش مصنوعیه یا صرفاً یک نام جذاب برای یک آپدیت دیگر؟
+    و چقدر می‌تونیم به این سیستم AI اعتماد کنیم؟
+
+    📩 برای اطلاع از جزئیات کامل این خبر:
+    زیر همین پست کامنت کنید **{derived_cta_word}** تا لینک کامل مطلب براتون ارسال بشه.
+    لینک مستقیم در بیو پیج هم موجوده.
+
+    #تگ_فارسی_نمونه #مثال_دیگر #سومین_تگ #SampleEnglishTag #AnotherExample 

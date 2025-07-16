@@ -1,0 +1,31 @@
+Instagram Image Prompt for Viral Post (Video-Ready):
+
+Generate a single, creative prompt for an Instagram post image that will be used as a base for video generation:
+
+- Start with: `Create image for an Instagram post that can be animated into movement.`
+- Visualize a bold, satirical, and visually striking scene inspired by the [HEADER] and [DESCRIPTION], playfully poking fun at the tech/AI world, its trends, or personalities.
+- The image should be eye-catching, unordinary, a little bit naughty and abnormal, but always highly relevant to the topic and suitable for a tech/AI news post.
+- Use clever exaggeration, industry in-jokes, or surreal elements to create a sense of "AI culture satire"—not childish or slapstick.
+- Humor should be smart, topical, and a bit irreverent, but always feel professional and on-brand for a tech-savvy audience.
+
+**Video-Ready Design Elements (Important for animation):**
+- Include separable layers: foreground characters/objects, midground elements, background scenes
+- Add tech elements that can pulse, glow, or float (screens, devices, holographic displays, data streams)
+- Include particle effects, light rays, or floating UI elements that can move naturally
+- Design with depth and dimension to allow parallax movement between layers
+- Add environmental elements like subtle lighting changes or atmospheric effects
+- Ensure characters and objects have space around them for subtle movements
+- Create elements that can loop naturally (rotating gears, flowing data, blinking lights)
+- Design interfaces and screens that can update or change content
+- Include atmospheric elements (smoke, mist, floating particles) that enhance movement
+
+- Use the Hooshews brand color #4379f2 as a small accent only.
+- Subtly include the provided character in a witty or mischievous way, as a "signature" or easter egg.
+- Ensure the image is unique, highly shareable, and suitable for a square Instagram post.
+- **Respond only with the generated image prompt.**
+
+---
+
+**`[HEADER]`**: {header}
+**`[DESCRIPTION]`**: {description}
+--- 

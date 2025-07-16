@@ -1,0 +1,20 @@
+Blog Post Title: {blog_title}
+
+Blog Post Content (Markdown):
+{blog_content}
+
+---
+
+Based on the Blog Post Title and Content above, provide the information as specified in the system prompt (JSON format with keys: derived_blog_topic, derived_key_takeaways, derived_core_emotion, derived_cta_word).
+
+Example JSON Output (for clarity on expected values and structure):
+{{
+  "derived_blog_topic": "AI's New Stock Market Prediction Power",
+  "derived_key_takeaways": [
+    "New AI analyzes vast data to predict market crashes with high accuracy.",
+    "Showed 90% accuracy in back-testing historical crashes.",
+    "Raises questions about market stability and ethical control of such power."
+  ],
+  "derived_core_emotion": "Amazement",
+  "derived_cta_word": "تحلیل"
+}} 
