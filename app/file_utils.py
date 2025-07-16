@@ -5,6 +5,8 @@ import re
 from datetime import datetime
 import asyncio # Added
 import aiohttp  # Added
+import aiofiles # Added for prompt reading
+import requests # Added for Pantry listing/getting
 
 # Configure logging (can be configured centrally if preferred)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -198,6 +200,24 @@ async def get_pantry_basket_content_async(pantry_id: str, basket_name: str) -> d
     except Exception as e_generic:
         logging.exception(f"An unexpected error occurred while getting content for Pantry basket '{basket_name}' (ID: {pantry_id}): {e_generic}")
         return None
+
+# NEW: Function to read prompt files
+async def read_prompt_file_async(prompt_filename: str) -> str:
+    """
+    Asynchronously reads the content of a prompt file from the 'app/prompts' directory.
+    """
+    filepath = os.path.join("app", "prompts", prompt_filename)
+    try:
+        async with aiofiles.open(filepath, mode='r', encoding='utf-8') as f:
+            content = await f.read()
+        logging.info(f"Successfully read prompt file: {filepath}")
+        return content
+    except FileNotFoundError:
+        logging.error(f"Prompt file not found: {filepath}")
+        return f"Error: Prompt file not found at {filepath}"
+    except Exception as e:
+        logging.exception(f"Error reading prompt file {filepath}: {e}")
+        return f"Error reading prompt file {filepath}: {e}"
 
 # Placeholder function remains the same
 def extract_keywords(text):
