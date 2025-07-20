@@ -2,6 +2,19 @@
 
 Automate your WordPress workflow: Generate Persian blog posts from English sources using AI and publish drafts instantly.
 
+## 🛠️ Technology Stack
+
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28.0-red.svg)](https://streamlit.io)
+[![LangChain](https://img.shields.io/badge/LangChain-0.3.25-orange.svg)](https://langchain.com)
+[![OpenAI](https://img.shields.io/badge/OpenAI-API-green.svg)](https://openai.com)
+[![Google AI](https://img.shields.io/badge/Google_AI-Gemini-blue.svg)](https://ai.google.dev)
+[![WordPress](https://img.shields.io/badge/WordPress-REST_API-blue.svg)](https://wordpress.org)
+[![Rank Math](https://img.shields.io/badge/Rank_Math-SEO-orange.svg)](https://rankmath.com)
+[![Pantry Cloud](https://img.shields.io/badge/Pantry_Cloud-Async-purple.svg)](https://getpantry.cloud)
+[![Markdown](https://img.shields.io/badge/Markdown-HTML-black.svg)](https://markdown.com)
+[![JSON](https://img.shields.io/badge/JSON-Data_Storage-yellow.svg)](https://json.org)
+
 ## 🌟 Project Overview
 
 The PersiaPress AI project is a Streamlit-based web application designed to automate and streamline the creation of Persian blog content for WordPress from English source material.
@@ -10,7 +23,9 @@ The PersiaPress AI project is a Streamlit-based web application designed to auto
 The primary goal of PersiaPress AI is to simplify and accelerate the process of generating engaging Persian blog posts for the `hooshews.com` WordPress site. It addresses the challenge of manually translating, adapting, and optimizing content for a Persian audience, a task that can be time-consuming and require significant effort. It also aims to enhance collaboration among content creators by providing a centralized platform with cloud-synchronized outputs.
 
 **Key Features & Functionalities (High-Level):**
-*   **AI-Powered Content Generation:** Leverages Large Language Models (LLMs) to generate a comprehensive package from English source articles. This includes a Persian blog post (translated and SEO-optimized), title, slug, meta description, image alt text, focus keywords, and tags. It also generates social media content like Instagram posts/stories and image prompts.
+*   **AI-Powered Content Generation:** Leverages Large Language Models (LLMs) to generate a comprehensive package from English source articles. This includes a Persian blog post (translated and SEO-optimized), title, slug, meta description, image alt text, focus keywords, and tags. It also generates social media content like Instagram posts/stories and image prompts (both artistic and realistic styles).
+*   **Advanced SEO Optimization:** Implements comprehensive SEO strategies including E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness), semantic keyword integration, strategic keyword placement, and modern SEO best practices for high Rank Math scores.
+*   **Persian Localization:** Specialized for Iranian audience with cultural references, Persian idioms, voice search optimization, and mobile-first design considerations.
 *   **WordPress Integration:** Directly interacts with the WordPress REST API to automate the creation of draft posts. This includes uploading featured images and managing tags.
 *   **Dual Save & Load Capabilities:**
     *   **Local Storage:** Saves all generated content as JSON files in a local `answers/` directory.
@@ -18,6 +33,7 @@ The primary goal of PersiaPress AI is to simplify and accelerate the process of 
 *   **Collaboration Support:** Generated files and Pantry Cloud basket names are prefixed with the user's WordPress username (`WP_USERNAME`), making it easier to identify and manage content in a team environment.
 *   **User-Friendly Web Interface:** Utilizes Streamlit to provide an interactive interface for inputting source article details, uploading images, initiating content generation, loading previous work, and publishing to WordPress.
 *   **Content Processing:** Includes features like converting generated Markdown content to HTML for WordPress compatibility.
+*   **Image Generation:** Creates optimized image prompts for blog thumbnails, Instagram posts, and social media content with brand authenticity and news relevance.
 
 **Target User:**
 The application is targeted towards content creators, bloggers, digital marketers, or editorial teams who manage a Persian-language WordPress website and wish to efficiently repurpose English content using AI. The features facilitating team collaboration (cloud storage, username prefixing) imply its suitability for small to medium-sized content teams.
@@ -46,18 +62,19 @@ The application is targeted towards content creators, bloggers, digital marketer
 │   ├── file_utils.py          # Utility functions for file operations and data persistence
 │   ├── utils.py               # Miscellaneous helper functions
 │   └── prompts/               # Directory for LLM prompt templates (text files)
-│       ├── system_prompt_blog_generation.txt
-│       ├── human_prompt_blog_generation.txt
-│       ├── blog_thumbnail_image_prompt.txt
-│       ├── instagram_static_image_prompt.txt
-│       ├── instagram_video_ready_image_prompt.txt
-│       ├── instagram_video_prompt.txt
-│       ├── system_prompt_instagram_texts.txt
-│       ├── human_prompt_instagram_texts.txt
-│       ├── system_prompt_analyze_blog.txt
-│       ├── human_prompt_analyze_blog.txt
-│       ├── system_prompt_instagram_story_teasers.txt
-│       └── human_prompt_instagram_story_teasers.txt
+│       ├── system_prompt_blog_generation.txt      # Enhanced system prompt with E-E-A-T focus
+│       ├── human_prompt_blog_generation.txt       # Comprehensive human prompt with SEO opt
+│       ├── blog_thumbnail_image_prompt.txt        # Minimal, clean image prompts
+│       ├── realistic_thumbnail_image_prompt.txt   # Realistic image prompts
+│       ├── instagram_static_image_prompt.txt      # Instagram static image prompts
+│       ├── instagram_video_ready_image_prompt.txt # Instagram video image prompts
+│       ├── instagram_video_prompt.txt             # Instagram video content prompts
+│       ├── system_prompt_instagram_texts.txt      # Instagram text generation system prompt
+│       ├── human_prompt_instagram_texts.txt       # Instagram text generation human prompt
+│       ├── system_prompt_analyze_blog.txt         # Blog analysis system prompt
+│       ├── human_prompt_analyze_blog.txt          # Blog analysis human prompt
+│       ├── system_prompt_instagram_story_teasers.txt # Story teaser system prompt
+│       └── human_prompt_instagram_story_teasers.txt  # Story teaser human prompt
 ├── images/                    # Stores temporary thumbnail images uploaded by the user
 └── plugins/                   # Contains WordPress plugins
     └── Rank-Math-Api-Manager/ # Custom plugin for Rank Math SEO API integration
@@ -69,7 +86,24 @@ The application is targeted towards content creators, bloggers, digital marketer
 ## 🚀 Features
 
 *   **Source Input:** Accepts English source article title, body, source name, and URL.
-*   **LLM Content Package Generation:** Generates Persian Title, English Slug, Persian Content (Markdown), Meta Description, Alt Text, Focus Keywords, SEO Title, English/Persian Tags, Instagram Post/Story content, and Image Prompts.
+*   **Advanced LLM Content Package Generation:** 
+    *   Generates Persian Title, English Slug, Persian Content (Markdown), Meta Description, Alt Text, Focus Keywords, SEO Title, English/Persian Tags
+    *   Instagram Post/Story content with Persian localization
+    *   Image Prompts (minimal, clean, realistic, and artistic styles)
+    *   E-E-A-T optimized content with authoritative sources
+    *   Semantic keyword integration with natural language flow
+*   **SEO Optimization:**
+    *   Strategic keyword placement (H1, meta description, first paragraph, H2 headings)
+    *   Content freshness indicators and schema markup suggestions
+    *   External linking to authoritative sources (2-3 dofollow links)
+    *   Image optimization with proper alt text and filenames
+    *   Table of contents for long articles (1500+ words)
+    *   Mobile-first responsive design considerations
+*   **Persian Localization:**
+    *   Cultural references and Persian idioms
+    *   Voice search optimization for Persian queries
+    *   Local news trends and Iranian tech context
+    *   Persian numerals and proper grammar
 *   **Dual Data Persistence & Loading:**
     *   Saves all generated data (including raw LLM outputs and final package) to local JSON files in `answers/`.
     *   Optionally saves the same data to Pantry Cloud if `PANTRY_ID` is configured.
@@ -123,7 +157,7 @@ The PersiaPress AI application follows a user-driven workflow, orchestrated by t
     *   Python 3.11
     *   `uv` package manager (recommended)
     *   WordPress site with REST API & Application Password.
-    *   OpenAI-compatible API access.
+    *   OpenAI-compatible API access or Google AI (Gemini) API access.
     *   (Optional) Custom Rank Math API plugin.
 2.  **Environment Setup:**
     *   Create a `.env` file in the project root.
@@ -131,7 +165,7 @@ The PersiaPress AI application follows a user-driven workflow, orchestrated by t
 
     ```env
     # LLM Configuration
-    GOOGLE_API_KEY=your_google_api_key_for_avalai 
+    GOOGLE_API_KEY=your_google_api_key_for_gemini
     BLOG_MODEL_NAME=choose_your_blog_model
     IMAGE_PROMPT_MODEL_NAME=choose_your_image_prompt_model
     INSTAGRAM_TEXT_MODEL_NAME=choose_your_instagram_text_model
@@ -185,6 +219,7 @@ The PersiaPress AI application follows a user-driven workflow, orchestrated by t
 ### LLM Usage
 *   Uses `langchain-openai`'s `ChatOpenAI` client via `app.llm_clients`.
 *   Content generation is orchestrated in `app.content_generator` with detailed prompts.
+*   Enhanced prompts include E-E-A-T optimization, semantic keyword integration, and Persian localization.
 
 ### WordPress Interaction (`requests`)
 *   Managed by `app.wordpress_handler`.
@@ -203,12 +238,21 @@ The PersiaPress AI application follows a user-driven workflow, orchestrated by t
 ### File Handling & Logging
 *   Standard Python libraries (`os`, `dotenv`, `logging`, `markdown`, `Pillow`, `mimetypes`).
 
+### SEO & Content Optimization
+*   Comprehensive SEO strategies implemented in prompts
+*   E-E-A-T optimization for search engine trust
+*   Semantic keyword integration with natural language flow
+*   Strategic keyword placement and content structure optimization
+
 ---
 
 ## 📈 Current Status & Future Plans
 
 ### Current Status
 *   Core workflow functional: LLM generation, local/Pantry saving (with username prefix), loading from local/Pantry, WordPress draft creation.
+*   Enhanced SEO optimization with E-E-A-T focus and semantic keyword integration.
+*   Persian localization with cultural references and voice search optimization.
+*   Minimal, clean image prompt generation for better visual appeal.
 *   Pantry operations are asynchronous.
 *   Rank Math API integration remains potentially unreliable.
 *   Non-ASCII tag creation via API is disabled.
@@ -218,7 +262,9 @@ The PersiaPress AI application follows a user-driven workflow, orchestrated by t
 *   Improving Rank Math integration.
 *   Solution for non-ASCII tags.
 *   More robust error handling.
-*   Internal linking.
-*   Testing.
+*   Internal linking capabilities.
+*   Enhanced testing suite.
+*   Performance optimization for large content generation.
+*   Additional social media platform integrations.
 
 ---
