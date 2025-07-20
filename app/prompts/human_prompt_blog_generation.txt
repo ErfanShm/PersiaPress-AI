@@ -13,11 +13,11 @@ Analyze: Thoroughly review the content of the provided article title and body be
 # Focus Keywords (Generate First)
 Focus Keywords (کلمات کلیدی کانونی):
 
-Generate **up to four relevant focus keywords** in Persian based on the source title and body. Define their roles and target presence:
+Generate **exactly four relevant focus keywords** in Persian based on the source title and body. Define their roles and target presence:
 *   **Primary Keyword (کلمه کلیدی اصلی):** Generate **one primary focus keyword**. This is the absolute most important term, directly representing the core topic. Target density: ~1%. Provide this for the `primary_focus_keyword` key.
 *   **Secondary Keyword (کلمه کلیدی ثانویه):** Generate **one secondary focus keyword**. This is the next most important related term, often targeting a key sub-topic or closely related concept. Target density: ~0.5%. Provide this for the `secondary_focus_keyword` key.
-*   **Additional Keywords (کلمات کلیدی اضافی):** Generate **up to two additional focus keywords**. These should target important LSI (Latent Semantic Indexing) terms, synonyms, or related concepts that broaden the article's reach. Target density: ~0.25% each. Provide these as a list of strings for the `additional_focus_keywords` key.
-*   **General:** You can mix Persian and English terms within each keyword if it represents a common search phrase or technical concept (e.g., 'راهکارهای یادگیری AI'). Total combined density should be around 1.5-2.0%, integrated naturally. **Avoid keyword stuffing.**
+*   **Additional Keywords (کلمات کلیدی اضافی):** Generate **exactly two additional focus keywords**. These should target important LSI (Latent Semantic Indexing) terms, synonyms, or related concepts that broaden the article's reach. Target density: ~0.25% each. Provide these as a list of strings for the `additional_focus_keywords` key.
+*   **General:** You can mix Persian and English terms within each keyword if it represents a common search phrase or technical concept (e.g., 'راهکارهای یادگیری AI'). Total combined density should be around 1.0-1.5%, integrated naturally. **Avoid keyword stuffing.**
 
 These keywords will be used to optimize other elements.
 
@@ -41,43 +41,103 @@ Title (عنوان):
 # NEW: SEO Title (Rank Math)
 SEO Title (عنوان سئو):
 
+**CRITICAL SEO REQUIREMENT:** The title tag is one of the strongest on-page relevance signals for search engines and is critical for attracting clicks in search results.
+
 *   Generate a separate, concise title specifically optimized for **search engine results pages (SERPs)**.
 *   **Strictly keep this title under 60 characters.**
-*   **Crucially, the exact `primary_focus_keyword` MUST be included prominently, ideally starting the SEO title. This is a strict SEO requirement.**
+*   **CRUCIAL: The exact `primary_focus_keyword` MUST be included prominently, ideally starting the SEO title. This is a strict SEO requirement for maximum search visibility.**
+*   **INSIGHT: Placing the keyword early in the title immediately signals relevance to users scanning search results and may prevent it from being truncated on smaller screens.**
+*   **Place the primary keyword as close to the beginning as possible while maintaining natural readability.**
+*   **Make the title MORE compelling and adrenaline-grabbing than the H1 title.** This is your chance to create maximum click-through appeal in search results.
+*   **Use power words, urgency, curiosity, or emotional triggers** that make users want to click immediately.
+*   **INSIGHT: Emotionally charged words can increase the title's click-through rate (CTR) by making it more compelling and attention-grabbing in a crowded search results page.**
+*   **Incorporate a positive or negative sentiment word** (e.g., "essential," "powerful," "critical") into the SEO meta title to increase its emotional impact.
+*   **INSIGHT: Similar to sentiment words, power words are persuasive and can significantly boost CTR by creating a sense of urgency, curiosity, or value.**
+*   **Include a power word** (e.g., "ultimate," "complete," "step-by-step") in the SEO meta title to make it more persuasive.
+*   **Consider adding numbers, questions, or promises** that create irresistible curiosity.
 *   Base it on the main Title and keywords, but prioritize brevity and SERP click-through rate.
+*   **Insight:** The title tag is one of the strongest on-page relevance signals for search engines and is critical for attracting clicks in search results.
 
 Permalink/Slug (پیوندیکتا):
 
 Generate a concise, SEO-friendly permalink (slug) based primarily on the `primary_focus_keyword` and source title.
+**Strictly keep this slug under 75 characters.**
 Must be entirely in English. Use hyphens (-) to separate words.
 Should accurately reflect the main topic and keywords.
 Example: ai-learning-solutions
 
 Meta Description (توضیح):
 
-*   Write a compelling meta description in Persian (strictly between 150-160 characters).
-*   **Crucially, the exact `primary_focus_keyword` MUST be included naturally within the description. This is a strict SEO requirement.**
+**CRITICAL SEO REQUIREMENT:** The primary focus keyword MUST be present in the meta description.
+
+**IMPORTANT INSIGHT:** While not a direct ranking factor, a well-crafted meta description with the keyword improves click-through rate (CTR) by showing relevance to the user's query.
+
+*   Write a compelling meta description in Persian (strictly under 160 characters).
+*   **MANDATORY: The exact `primary_focus_keyword` MUST be included naturally within the description. This is a strict SEO requirement for maximum CTR.**
+*   **VERIFICATION: Double-check that the primary keyword appears in the meta description before finalizing.**
 *   Try to naturally incorporate the `secondary_focus_keyword` as well, if possible.
 *   Accurately summarize the post's content to maximize click-through rate (CTR) from search results.
-*   Include a strong call-to-action (e.g., "بیشتر بدانید") to improve CTR.
+*   Include a strong call-to-action to improve CTR.
+*   **Focus on relevance and value** - show users exactly what they'll get from clicking.
 
 Content Generation:
 
-*   **Introduction:** In the first paragraph, include a friendly, personal greeting addressing the Hooshews (هوشیوز) audience directly, but **do not always place it as the very first sentence**. Vary the placement and style of the greeting to keep introductions feeling natural and diverse. Write the introduction (and the whole post) in a conversational, almost journal-like tone. Connect the topic to hooshews.com's focus on AI/tech news.
-*   **Focus Keyword Placement:** 
-    *   **Crucially, include the exact `primary_focus_keyword` within the first 10% of the main content body (after the intro).**
-    *   **Incorporate the `primary_focus_keyword` naturally into at least one `##` (H2) or `###` (H3) heading. Also incorporate the `secondary_focus_keyword` into other `##` (H2) or `###` (H3) headings where relevant.** This is important for on-page SEO.
-    *   Maintain a **natural keyword density** for *all* focus keywords throughout the content, aiming for approximately 1.5-2.0% density *combined* (Primary: ~1%, Secondary: ~0.5%, Additional: ~0.25% each), integrated naturally. **Avoid keyword stuffing.**
-*   **Body:** Write a comprehensive, *unique* Persian blog post that summarizes, explains, and potentially *adds value beyond* the key information from the source body. 
+*   **Introduction:** 
+    *   **First Paragraph:** The first sentence or paragraph must include the primary keyword (search engines and readers value this). Vary the placement of the friendly greeting to keep intros natural.
+    *   In the first paragraph, include a friendly, personal greeting addressing the Hooshews (هوشیوز) audience directly, but **do not always place it as the very first sentence**. Vary the placement and style of the greeting to keep introductions feeling natural and diverse.
+    *   Address the audience's pain point to connect with their needs
+    *   Include the primary keyword within the first 75 words for SEO optimization
+    *   Write the introduction (and the whole post) in a conversational, almost journal-like tone. Connect the topic to hooshews.com's focus on AI/tech news.
+
+*   **Persian Localization and Audience:**
+    *   **Language and Tone:** Write entirely in Persian with proper grammar, a conversational style, and engaging examples. Use Persian idioms or examples when possible, but keep major tech terms in English.
+    *   **Local Relevance:** Add Persian cultural references or local news trends to make the content resonate with Iranian readers. For example, tie examples to Iranian tech news if applicable, mention Persian New Year (نوروز) or local tech events when relevant.
+    *   **Voice Search / Mobile:** Optimize for Persian voice search and mobile-first usage, since many Iranian searches come via smartphone. Use natural, conversational language that works well for voice queries.
+    *   **Cultural Nuances:** Consider local trends, events, and preferences. Persian users prefer well-structured informative content with clear organization.
+*   **Content Structure & SEO Optimization:** 
+    *   **Keyword Placement:** 
+        *   Include the exact `primary_focus_keyword` within the first 10% of the main content body (after the intro)
+        *   Include the primary keyword in exactly one H2 heading for optimal SEO placement
+        *   Incorporate the `secondary_focus_keyword` into other H2 or H3 headings where relevant
+        *   Maintain natural keyword density: 1.0-1.5% combined (Primary: ~0.8%, Secondary: ~0.4%, Additional: ~0.2% each)
+        *   Prioritize semantic relevance and natural language over rigid keyword density
+    *   **Content Structure:**
+        *   Divide into 3-5 H2 sections for clear organization
+        *   Use H2/H3 tags for major sections to improve SEO and usability
+        *   Write short, concise paragraphs (2-4 sentences, never exceeding 120 words)
+        *   **Use tables, numbered lists, and bullet points for better readability (جدول، لیست شماره‌دار و بولت برای خوانایی)**
+        *   **MANDATORY: Include tables when content involves comparisons, tools, features, or structured data (e.g., tool comparisons, feature lists, pricing tables)**
+        *   Require at least one bullet list and one numbered list in the content
+        *   Use **bold text** to highlight SEO keywords and key points
+        *   Use *italics* for additional emphasis when needed
+    *   **Content Freshness:** Include content freshness indicators and suggest schema markup for rich snippets
+*   **Content Creation:** Write a comprehensive, *unique* Persian blog post that summarizes, explains, and potentially *adds value beyond* the key information from the source body. 
     *   **Strictly avoid copying sentences or significant phrases** from the source body. Focus on synthesizing information and expressing it in **completely original wording**.
     *   When instructed to **'add value beyond'** the source, this means incorporating elements like: **original analysis, unique examples relevant to the Persian audience, connections to recent local events or trends (if applicable), or a concluding thought/opinion.**
-    *   **Target a minimum word count of 600 words, aiming for longer comprehensive content where appropriate.** Ensure the content is unique and is not just a rehash or direct translation.
-*   **Structure & Readability:** 
-    *   Structure the content beautifully using Markdown. Make it visually appealing and easy to scan. Use Markdown elements like bullet points (`* point`), numbered lists (`1. point`), bold text (`**important term**`).
-    *   Use appropriate Markdown for headings (e.g., `##` for H2 headings, `###` for H3 headings).
-    *   **Crucially, keep paragraphs short and focused, ideally 2-4 sentences and well under 120 words each.**
-    *   Add at least one unique insight or perspective (e.g., a practical tip, a local context, or a forward-looking question). <--- This aligns with the 'add value' instruction above.
-    *   **Suggest Media:** Where appropriate, insert placeholders like `[پیشنهاد تصویر: توضیح تصویر مورد نیاز در اینجا]` or `[پیشنهاد ویدیو: توضیح ویدیوی مورد نیاز در اینجا]` to guide manual media insertion later.
+    *   **Target a minimum word count of 800 words, aiming for longer comprehensive content where appropriate.** Ensure the content is unique and is not just a rehash or direct translation.
+    *   **Use tables, numbered lists, and bullet points** for better readability
+    *   **CRITICAL: When content involves tools, comparisons, features, or structured data, ALWAYS include a properly formatted table with headers and organized data**
+
+*   **Quality, Authority (E-E-A-T) and Updates:**
+    *   **E-E-A-T:** Demonstrating E-E-A-T (Expertise, Authoritativeness, Trustworthiness) is essential for SEO. This means citing credible sources, sharing personal experience or case studies, and ensuring accuracy.
+    *   **Expertise Demonstration:** Add unique insights, data, or quotes rather than just paraphrasing the source. Include practical tips or local case studies that go beyond the source material.
+    *   **Authoritative Sources:** Quote authoritative experts or sources with clear attribution. Always format quotes with Markdown blockquotes and cite them properly.
+    *   **External Links:** Use natural anchor text to link key terms (e.g., brand names like OpenAI) to official sites, which improves trust and SEO. Encourage linking to high-quality Persian sites when available.
+    *   **Freshness:** Refresh content annually or as needed. While this covers new content, consider that updating old content can boost rankings.
+*   **Media & Enhanced Features:** 
+    *   **Table of Contents:** For articles over 1500 words, generate a table of contents at the beginning linking to main H2 headings
+    *   **Image Suggestions:** Suggest a relevant image placement every 300-400 words with:
+        *   **Placeholder description:** Clear description of what the image should show
+        *   **SEO-optimized filename:** Descriptive filename for the image
+        *   **Descriptive alt text:** Alt text containing relevant keywords
+    *   **Format image suggestions as:**
+        ```
+        [پیشنهاد تصویر: توضیح تصویر مورد نیاز در اینجا]
+        Filename: descriptive-image-name.webp
+        Alt Text: متن جایگزین بهینه‌شده برای سئو
+        ```
+    *   **Schema Markup:** Suggest appropriate schema markup for rich snippets (e.g., FAQ, HowTo, Article)
+    *   **Content Freshness:** Include publish date and suggest update frequency for content maintenance
 *   **Handling English Terms:** Within the body text, follow the same principle as for the title: keep essential English terms directly, or if translating, follow with the English term in parentheses `()` (e.g., `یادگیری ماشین (Machine Learning)`).
 *   **Quote Handling & Attribution:** When including a direct quote:
     *   Format the quote distinctly using **Markdown blockquote syntax (prefix each line of the quote with '> ')**. You may optionally also use Persian quotation marks `« »` within the blockquoted text if appropriate for style.
@@ -87,6 +147,8 @@ Content Generation:
     *   Attribute using an em dash (`—`) before the source information on a new line below the quote (this should also be part of the blockquote if it directly follows the quoted text).
 *   **Linking (External):** 
     *   **Goal:** Enhance credibility and provide value by linking externally to high-quality, authoritative sources.
+    *   **INSIGHT: Linking to authoritative, non-competing sources demonstrates that the content is well-researched and adds credibility, which is a component of E-E-A-T.**
+    *   **Include 2-3 dofollow external links** to high-authority, non-competing websites (e.g., research studies, reputable industry publications) to support claims made in the text.
     *   **What to Link:** Identify opportunities to link key **English terms, brand names (like OpenAI, Google Gemini), specific data points, technical concepts, or cited studies/sources** to their official/authoritative URLs.
     *   **Relevance & Value:** Only add links that genuinely enhance the reader's understanding or provide necessary attribution/evidence. Prioritize quality over quantity (a few good links are better than many weak ones).
     *   **Anchor Text:** Use **natural and descriptive anchor text** (the `[linked text]` part) that accurately reflects the content of the target URL. Avoid generic text like "click here".
@@ -94,14 +156,18 @@ Content Generation:
     *   **Format:** Embed these links **directly** within the content body using standard Markdown syntax: `[طبیعی و توصیفی لنگر متن](URL)`. Ensure the URL is valid.
     *   **Selectivity:** Be professional and selective; do not over-link.
     *   *Internal linking will be handled manually.* 
-*   **Language & Conclusion:**
+*   **Performance & Technical Requirements:**
     *   Use Persian numerals (e.g., ۱, ۲, ۳) for any numbers within the Persian text.
+    *   Optimize for mobile-first experience and fast loading times
+    *   Ensure content is accessible and screen-reader friendly
     *   Conclude the main body of the article with a Markdown horizontal rule (`---`) on its own line, followed immediately by the source attribution text formatted exactly as: `منبع: [{source_name}]({source_url})` using the provided source name and URL.
 
 Thumbnail Image:
 
-*   Alt Text (متن جایگزین): Provide descriptive Persian alt text for the thumbnail image. **Crucially, include the exact `primary_focus_keyword` naturally within the alt text.** Try to include the `secondary_focus_keyword` as well if natural. Incorporate other relevant keywords (from the source title and body) for image SEO.
-*   Filename: The English `slug` generated will be used to create the filename `hooshews.com-[slug].webp` later.
+*   **Alt Text (متن جایگزین):** Provide descriptive Persian alt text for the thumbnail image. **CRUCIAL: Include the exact `primary_focus_keyword` naturally within the alt text.**
+    *   **Ensure at least one image has alt text containing both the primary and secondary focus keywords** for both accessibility and SEO optimization.
+    *   Try to include the `secondary_focus_keyword` as well if natural. Incorporate other relevant keywords (from the source title and body) for image SEO.
+*   **Filename:** The English `slug` generated will be used to create the filename `hooshews.com-[slug].webp` later.
 
 Tags:
 

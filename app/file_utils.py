@@ -17,6 +17,7 @@ PANTRY_BASE_URL = "https://getpantry.cloud/apiv1/pantry" # Added for Pantry
 async def save_output_to_file_async(
     raw_blog_output=None, 
     raw_image_prompt=None, 
+    raw_realistic_image_prompt=None, # NEW: Added for realistic image prompt
     raw_instagram_post_image_prompt=None, 
     raw_instagram_video_prompt=None,  # Added for video prompt
     raw_iranian_farsi_video_prompt=None, # NEW: Added for Iranian Farsi video prompt
@@ -70,6 +71,7 @@ async def save_output_to_file_async(
         "error_message": error,
         "raw_blog_llm_output": raw_blog_output,
         "raw_image_prompt_llm_output": raw_image_prompt,
+        "raw_realistic_image_prompt_llm_output": raw_realistic_image_prompt, # NEW: Added for realistic image prompt
         "raw_instagram_post_image_prompt": raw_instagram_post_image_prompt,
         "raw_instagram_video_prompt": raw_instagram_video_prompt,
         "raw_iranian_farsi_video_prompt": raw_iranian_farsi_video_prompt, # NEW: Added for Iranian Farsi video prompt

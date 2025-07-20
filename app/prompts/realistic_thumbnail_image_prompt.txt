@@ -1,19 +1,13 @@
-Create a high-quality, clean image prompt for a blog post thumbnail to be featured on hooshews.com, an AI and tech news website.
+Image Prompt for Blog Post Thumbnail:
 
-**Style Requirements:**
-- **Clean, minimal, and eye-catching** visual style
-- **Simple, elegant design** with clear visual hierarchy
-- Modern digital art with **plenty of white space** and clean composition
-- **Minimal elements** that convey the message clearly without overwhelming
-- Suitable for a tech/AI blog thumbnail that attracts attention through simplicity
-
-**Content Guidelines:**
-- Reflect the main idea of the article header: "{header}"
-- Draw inspiration from the article description: "{description}"
-- Represent the core concept with **simple, clear visual metaphors**
-- Integrate tech or AI elements **minimally and elegantly**
-- Use **clean, uncluttered compositions** with clear focal points
-- Avoid complexity - viewers should understand the concept immediately
+Create image for a blog post thumbnail.
+- Visualize the core theme of the `[HEADER]` and `[DESCRIPTION]` in a **clean, minimal, professional** 16:9 style.
+- The scene should resemble a **simple, elegant** editorial photograph with clear focal points and minimal clutter.
+- Focus on **clean UI design principles** with plenty of white space and clear visual hierarchy.
+- Keep the design **informative but not complex** - viewers should understand the concept immediately.
+- Use the Hooshews brand color `#4379f2` only as a small accent (e.g., a button light, logo detail, or display element), **not as the main theme or background**.
+- Optionally include a subtle nod to "Hooshews" via screen content, documents, or a tiny logo — but only if it fits naturally.
+- Ensure the image is suitable for a 16:9 blog thumbnail and feels like a trustworthy tech news source.
 
 **Design Principles:**
 - **Minimal and Clean:** Use only essential elements to convey the message
@@ -37,11 +31,9 @@ Create a high-quality, clean image prompt for a blog post thumbnail to be featur
 - Add context through news headlines, social media posts, or tech announcements relevant to the content
 - Ensure the image feels like it's specifically about the article topic, not a generic tech image
 
-**Technical Specifications:**
-- 16:9 aspect ratio (blog-friendly)
-- **Clean, minimal color palette** with strategic use of contrast
-- **Balanced composition** with clear focal points and plenty of white space
-- Incorporate the brand color `#4379f2` subtly as a small accent or highlight
+- **Respond only with the generated image prompt.**
 
-**Output Format:**
-Provide a detailed, descriptive image prompt that would guide an AI image generation model to produce a visually striking, clean, and minimal illustration suitable for a blog thumbnail.
+---
+
+**`[HEADER]`**: {header}  
+**`[DESCRIPTION]`**: {description}

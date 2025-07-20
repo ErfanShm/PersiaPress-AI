@@ -1,28 +1,47 @@
-Instagram Image Prompt for Viral Static Post:
+Create a photorealistic, high-quality image prompt for a blog post thumbnail to be featured on hooshews.com, an AI and tech news website.
 
-Generate a single, creative prompt for a static Instagram post image:
+**Style Requirements:**
+- **Clean, minimal, and eye-catching** visual with editorial quality
+- **Simple, elegant design** with clear visual hierarchy and plenty of white space
+- High resolution with crisp focus on key elements
+- Professional photography standards suitable for a modern tech/AI blog
+- **Minimal elements** that convey the message clearly without overwhelming the viewer
 
-- Start with: `Create image for an Instagram post.`
-- Visualize a bold, satirical, and visually striking scene inspired by the [HEADER] and [DESCRIPTION], playfully poking fun at the tech/AI world, its trends, or personalities.
-- The image should be eye-catching, unordinary, a little bit naughty and abnormal, but always highly relevant to the topic and suitable for a tech/AI news post.
-- Use clever exaggeration, industry in-jokes, or surreal elements to create a sense of "AI culture satire"—not childish or slapstick.
-- Humor should be smart, topical, and a bit irreverent, but always feel professional and on-brand for a tech-savvy audience.
+**Content Guidelines:**
+- Reflect the main idea of the article header: "{header}"
+- Draw inspiration from the article description: "{description}"
+- Visually represent the article's core concept with **clarity and simplicity**
+- Integrate tech or AI-related elements **minimally and elegantly**
+- Use **clean, uncluttered compositions** with clear focal points
+- **Avoid complexity** - viewers should understand the concept immediately
 
-**Static Image Design Focus:**
-- Maximize visual impact in a single frame
-- Strong composition with clear focal points
-- Bold, attention-grabbing elements that work without movement
-- High contrast and dramatic lighting for mobile viewing
-- Intricate details that reward closer inspection
-- Perfect balance and visual hierarchy for immediate comprehension
+**Design Principles:**
+- **Minimal and Clean:** Use only essential elements to convey the message
+- **Eye-catching:** Simple but visually striking design that grabs attention
+- **Not Complex:** Avoid puzzle-like complexity or overwhelming details
+- **UI-focused:** Clean interface elements, icons, or simple visual metaphors
+- **Informative:** Clearly communicates the article topic without confusion
+- **Elegant:** Professional, modern aesthetic with good visual balance
 
-- Use the Hooshews brand color #4379f2 as a small accent only.
-- Subtly include the provided character in a witty or mischievous way, as a "signature" or easter egg.
-- Ensure the image is unique, highly shareable, and suitable for a square Instagram post.
-- **Respond only with the generated image prompt.**
+**Brand Integration:**
+- Hooshews.com brand color #4379f2 may appear subtly as an accent (e.g., on devices, UI elements, or brand materials)
+- Any logos or brand elements should appear in their original, official colors and typography
+- Brand integration should feel natural and authentic to the professional setting
+- Avoid any stylized or modified versions of real brand elements
 
----
+**Technical Specifications:**
+- 16:9 aspect ratio (blog-friendly)
+- **Clean, minimal color palette** with strategic use of contrast
+- **Balanced composition** with clear focal points and plenty of white space
+- Camera angle should enhance the subject while maintaining simplicity
+- Natural shadows and lighting that create authentic visual depth
 
-**`[HEADER]`**: {header}
-**`[DESCRIPTION]`**: {description}
---- 
+**Authenticity Requirements:**
+- All objects, devices, and environments should look exactly as they appear in real life
+- Professional settings should reflect actual workplace or studio environments
+- Technology elements should be accurate and current
+- People should appear natural and professional, not stylized
+- Lighting should be realistic with no artificial or harsh post-processing effects
+
+**Output Format:**
+Provide a detailed, descriptive image prompt that would guide a photorealistic AI image generation model. Focus on specific objects, setting, mood, lighting conditions, camera angle, and realistic details to make the image look like a professional editorial photograph. Include specific color codes for brand elements and ensure all details are authentic and true-to-life.

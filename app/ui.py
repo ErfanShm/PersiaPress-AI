@@ -121,7 +121,7 @@ def main():
             if not source_name or not source_title or not source_body or not source_url:
                 st.warning("Please provide Source Name, Source Title, Source Body, and Source URL.")
             else:
-                with st.spinner("Generating Persian blog post, image prompts (blog & Instagram), video prompts, and Instagram texts..."): # Updated spinner
+                with st.spinner("Generating Persian blog post, image prompts (artistic & realistic blog + Instagram), video prompts, and Instagram texts..."): # Updated spinner
                     result_package = asyncio.run(generate_persian_blog_package(
                         llm_blog_client=llm_blog, 
                         llm_image_prompt_client=llm_image_prompt, 
@@ -192,8 +192,11 @@ def main():
                     st.markdown("**برای کپی کردن:**")
                     st.code(result_package.get('content', 'N/A'), language='markdown')
                 st.divider()
-                with st.expander("🖼️ پرامپت تولید تصویر (وبلاگ)"):
+                with st.expander("🖼️ پرامپت تولید تصویر (وبلاگ - هنری)"):
                     st.code(result_package.get('image_prompt', 'N/A'), language=None)
+                st.divider()
+                with st.expander("📸 پرامپت تولید تصویر (وبلاگ - واقع‌گرایانه)"):
+                    st.code(result_package.get('realistic_image_prompt', 'N/A'), language=None)
                 st.divider()
                 # This section now directly uses data from result_package (which is display_data)
                 with st.expander("📸 اینستاگرام: عنوان، کپشن، پرامپت تصویر و ویدیو", expanded=True):
@@ -285,8 +288,11 @@ This section contains all components needed for creating engaging Instagram cont
                         st.markdown("**3. Body Text (متن بدنه):** N/A")
 
                 st.divider()
-                st.subheader("🖼️ Upload and Save Thumbnail Image (Blog)")
-                uploaded_image = st.file_uploader("Choose an image file (JPG, PNG, etc.)...", type=["jpg", "jpeg", "png"])
+                st.subheader("🖼️ Upload and Save Thumbnail Images")
+                
+                # Artistic Thumbnail Upload
+                st.markdown("**🎨 Artistic Thumbnail (Blog):**")
+                uploaded_image = st.file_uploader("Choose an artistic image file (JPG, PNG, etc.)...", type=["jpg", "jpeg", "png"], key="artistic_upload")
                 
                 if uploaded_image is not None:
                     target_filename = result_package.get('filename')
@@ -295,18 +301,47 @@ This section contains all components needed for creating engaging Instagram cont
                             save_path = os.path.join(GRAPHIC_DIR, target_filename)
                             os.makedirs(GRAPHIC_DIR, exist_ok=True)
                             img = Image.open(uploaded_image)
-                            st.image(img, caption="Uploaded Image", use_column_width=True)
+                            st.image(img, caption="Uploaded Artistic Image", use_column_width=True)
                             if img.mode != 'RGB':
                                 img = img.convert('RGB')
                                 logging.info(f"Converted image mode from {img.mode} to RGB.")
-                            logging.info(f"Attempting to save image to: {save_path}")
+                            logging.info(f"Attempting to save artistic image to: {save_path}")
                             img.save(save_path, 'WEBP')
-                            st.success(f"Image successfully saved as WebP to: {save_path}")
+                            st.success(f"Artistic image successfully saved as WebP to: {save_path}")
                         except Exception as img_e:
-                            st.error(f"Error processing or saving image: {img_e}")
-                            logging.exception(f"Error processing/saving uploaded image:")
+                            st.error(f"Error processing or saving artistic image: {img_e}")
+                            logging.exception(f"Error processing/saving uploaded artistic image:")
                     else:
                         st.error("Could not determine the target filename from the generated results.")
+                
+                # Realistic Thumbnail Upload
+                st.markdown("**📸 Realistic Thumbnail (Blog):**")
+                # Create realistic filename by adding "_realistic" before the extension
+                realistic_filename = None
+                if result_package.get('filename'):
+                    base_name = result_package.get('filename').replace('.webp', '')
+                    realistic_filename = f"{base_name}_realistic.webp"
+                
+                uploaded_realistic_image = st.file_uploader("Choose a realistic image file (JPG, PNG, etc.)...", type=["jpg", "jpeg", "png"], key="realistic_upload")
+                
+                if uploaded_realistic_image is not None:
+                    if realistic_filename:
+                        try:
+                            save_path = os.path.join(GRAPHIC_DIR, realistic_filename)
+                            os.makedirs(GRAPHIC_DIR, exist_ok=True)
+                            img = Image.open(uploaded_realistic_image)
+                            st.image(img, caption="Uploaded Realistic Image", use_column_width=True)
+                            if img.mode != 'RGB':
+                                img = img.convert('RGB')
+                                logging.info(f"Converted realistic image mode from {img.mode} to RGB.")
+                            logging.info(f"Attempting to save realistic image to: {save_path}")
+                            img.save(save_path, 'WEBP')
+                            st.success(f"Realistic image successfully saved as WebP to: {save_path}")
+                        except Exception as img_e:
+                            st.error(f"Error processing or saving realistic image: {img_e}")
+                            logging.exception(f"Error processing/saving uploaded realistic image:")
+                    else:
+                        st.error("Could not determine the realistic filename from the generated results.")
 
             st.markdown('</div>', unsafe_allow_html=True)
 
@@ -326,15 +361,22 @@ This section contains all components needed for creating engaging Instagram cont
                 wp_image_filename = display_data.get('filename') # Get expected image filename
                 wp_image_alt_text = display_data.get('alt_text') # Get image alt text
                 
-                # Check if image exists
+                # Check if images exist (prioritize realistic over artistic)
                 wp_image_path = None
                 if wp_image_filename:
-                    expected_image_path = os.path.join(GRAPHIC_DIR, wp_image_filename)
-                    if os.path.exists(expected_image_path):
-                        wp_image_path = expected_image_path
-                        st.info(f"Found image: {expected_image_path}")
+                    # First check for realistic image
+                    base_name = wp_image_filename.replace('.webp', '')
+                    realistic_image_path = os.path.join(GRAPHIC_DIR, f"{base_name}_realistic.webp")
+                    artistic_image_path = os.path.join(GRAPHIC_DIR, wp_image_filename)
+                    
+                    if os.path.exists(realistic_image_path):
+                        wp_image_path = realistic_image_path
+                        st.info(f"Found realistic image: {realistic_image_path}")
+                    elif os.path.exists(artistic_image_path):
+                        wp_image_path = artistic_image_path
+                        st.info(f"Found artistic image: {artistic_image_path}")
                     else:
-                        st.warning(f"Image file not found at expected path: {expected_image_path}. Please place the image there. The post will be created without a featured image.")
+                        st.warning(f"Image files not found at expected paths: {realistic_image_path} or {artistic_image_path}. Please place an image there. The post will be created without a featured image.")
                         wp_image_alt_text = None # Don't pass alt text if image isn't there
                 else:
                     st.warning("Filename for image not found in generated data. Cannot check for image.")
