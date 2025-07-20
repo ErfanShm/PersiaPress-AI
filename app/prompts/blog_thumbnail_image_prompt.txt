@@ -1,17 +1,40 @@
-
 Image Prompt for Blog Post Thumbnail:
 
-Generate a single, creative prompt for an AI news blog post thumbnail:
-- Start with: `Create image for a blog post thumbnail.`
-- Visualize the core theme of the `[HEADER]` and `[DESCRIPTION]` in a style that's vibrant, modern, and eye-catching.
-- Subtly include the provided character's likeness as a minor, natural part of the scene (not the main focus, not pasted in, but blended in contextually—like an easter egg).
-- Use the Hooshews brand color `#4379f2` only as a small accent (never as the main theme or background).
-- Add a subtle reference to "Hooshews" if possible.
-- Ensure the image is unique, high-CTR, and suitable for a 16:9 thumbnail.
+Create image for a blog post thumbnail.
+- Visualize the core theme of the `[HEADER]` and `[DESCRIPTION]` in a **clean, minimal, eye-catching** 16:9 style.
+- Focus on **simple, elegant design** with clear visual hierarchy - avoid complexity and clutter.
+- Use **minimal elements** that convey the message clearly without overwhelming the viewer.
+- Prefer **clean UI design principles** with plenty of white space and clear focal points.
+- Keep the design **informative but not complex** - viewers should understand the concept immediately.
+- Use the Hooshews brand color `#4379f2` only as a small accent detail (not background or dominant color).
+- Make sure the image is suitable for a blog thumbnail and encourages high click-through rates.
+
+**Design Principles:**
+- **Minimal and Clean:** Use only essential elements to convey the message
+- **Eye-catching:** Simple but visually striking design that grabs attention
+- **Not Complex:** Avoid puzzle-like complexity or overwhelming details
+- **UI-focused:** Clean interface elements, icons, or simple visual metaphors
+- **Informative:** Clearly communicates the article topic without confusion
+- **Elegant:** Professional, modern aesthetic with good visual balance
+
+**Brand Integration & News Authenticity:**
+- Include relevant brand logos, devices, or UI elements that are specifically mentioned in the article content
+- Any logos or brand elements should appear in their original, official colors and typography with no artistic alterations
+- Integrate news-related elements like screens showing relevant headlines, social media feeds, or tech news interfaces
+- Include specific technology brands, apps, or platforms mentioned in the article content
+- Ensure all brand elements look exactly as they appear in real life for authenticity
+- Add subtle news context through realistic tech interfaces, notifications, or trending topics
+
+**Content-Specific Elements:**
+- Reference specific companies, products, or technologies mentioned in the article
+- Include realistic UI elements, app interfaces, or device screens that relate to the article topic
+- Add context through news headlines, social media posts, or tech announcements relevant to the content
+- Ensure the image feels like it's specifically about the article topic, not a generic tech image
+
 - **Respond only with the generated image prompt.**
 
 ---
 
-**`[HEADER]`**: {header}
+**`[HEADER]`**: {header}  
 **`[DESCRIPTION]`**: {description}
 --- 
