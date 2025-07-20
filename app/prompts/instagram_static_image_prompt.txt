@@ -1,27 +1,19 @@
 Create a photorealistic, high-quality image prompt for a blog post thumbnail to be featured on hooshews.com, an AI and tech news website.
 
 **Style Requirements:**
-- **Clean, minimal, and eye-catching** visual with editorial quality
-- **Simple, elegant design** with clear visual hierarchy and plenty of white space
+- Photorealistic, highly detailed visual with editorial or cinematic quality
+- Natural lighting with realistic shadows, highlights, and depth
 - High resolution with crisp focus on key elements
 - Professional photography standards suitable for a modern tech/AI blog
-- **Minimal elements** that convey the message clearly without overwhelming the viewer
+- Authentic, real-world appearance without any cartoonish, abstract, or painterly elements
 
 **Content Guidelines:**
 - Reflect the main idea of the article header: "{header}"
 - Draw inspiration from the article description: "{description}"
-- Visually represent the article's core concept with **clarity and simplicity**
-- Integrate tech or AI-related elements **minimally and elegantly**
-- Use **clean, uncluttered compositions** with clear focal points
-- **Avoid complexity** - viewers should understand the concept immediately
-
-**Design Principles:**
-- **Minimal and Clean:** Use only essential elements to convey the message
-- **Eye-catching:** Simple but visually striking design that grabs attention
-- **Not Complex:** Avoid puzzle-like complexity or overwhelming details
-- **UI-focused:** Clean interface elements, icons, or simple visual metaphors
-- **Informative:** Clearly communicates the article topic without confusion
-- **Elegant:** Professional, modern aesthetic with good visual balance
+- Visually represent the article's core concept with clarity and realism
+- Integrate tech or AI-related elements when contextually appropriate
+- Use realistic, real-world objects, people, and environments
+- Ensure all brand elements appear exactly as they should in real life with no artistic alterations
 
 **Brand Integration:**
 - Hooshews.com brand color #4379f2 may appear subtly as an accent (e.g., on devices, UI elements, or brand materials)
@@ -31,9 +23,9 @@ Create a photorealistic, high-quality image prompt for a blog post thumbnail to 
 
 **Technical Specifications:**
 - 16:9 aspect ratio (blog-friendly)
-- **Clean, minimal color palette** with strategic use of contrast
-- **Balanced composition** with clear focal points and plenty of white space
-- Camera angle should enhance the subject while maintaining simplicity
+- Realistic textures, materials, and true-to-life color tones
+- Balanced and professional composition with cinematic depth of field
+- Camera angle should enhance the subject while maintaining realism
 - Natural shadows and lighting that create authentic visual depth
 
 **Authenticity Requirements:**

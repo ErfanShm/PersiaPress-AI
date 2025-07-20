@@ -1,21 +1,13 @@
 Image Prompt for Blog Post Thumbnail:
 
 Create image for a blog post thumbnail.
-- Visualize the core theme of the `[HEADER]` and `[DESCRIPTION]` in a **clean, minimal, eye-catching** 16:9 style.
-- Focus on **simple, elegant design** with clear visual hierarchy - avoid complexity and clutter.
-- Use **minimal elements** that convey the message clearly without overwhelming the viewer.
-- Prefer **clean UI design principles** with plenty of white space and clear focal points.
-- Keep the design **informative but not complex** - viewers should understand the concept immediately.
+- Visualize the core theme of the `[HEADER]` and `[DESCRIPTION]` in a modern, vibrant, high-conversion 16:9 style.
+- Prefer a stylized, creative, or slightly conceptual visual language (not overly realistic), appropriate for AI, tech, and futuristic topics.
+- You may represent abstract ideas metaphorically or symbolically.
+- Subtly include the provided character's likeness as a minor, natural part of the scene — not central, not pasted in, but blended contextually like an easter egg.
 - Use the Hooshews brand color `#4379f2` only as a small accent detail (not background or dominant color).
+- If character blending or Hooshews reference feels forced, prioritize visual coherence and uniqueness.
 - Make sure the image is suitable for a blog thumbnail and encourages high click-through rates.
-
-**Design Principles:**
-- **Minimal and Clean:** Use only essential elements to convey the message
-- **Eye-catching:** Simple but visually striking design that grabs attention
-- **Not Complex:** Avoid puzzle-like complexity or overwhelming details
-- **UI-focused:** Clean interface elements, icons, or simple visual metaphors
-- **Informative:** Clearly communicates the article topic without confusion
-- **Elegant:** Professional, modern aesthetic with good visual balance
 
 **Brand Integration & News Authenticity:**
 - Include relevant brand logos, devices, or UI elements that are specifically mentioned in the article content

@@ -1,27 +1,19 @@
-Create a high-quality, clean image prompt for a blog post thumbnail to be featured on hooshews.com, an AI and tech news website.
+Create a high-quality, creative image prompt for a blog post thumbnail to be featured on hooshews.com, an AI and tech news website.
 
 **Style Requirements:**
-- **Clean, minimal, and eye-catching** visual style
-- **Simple, elegant design** with clear visual hierarchy
-- Modern digital art with **plenty of white space** and clean composition
-- **Minimal elements** that convey the message clearly without overwhelming
-- Suitable for a tech/AI blog thumbnail that attracts attention through simplicity
+- Vibrant, colorful, and imaginative visual style
+- Slightly stylized or cartoonish with artistic flair
+- Modern digital art or fantasy illustration quality
+- Dynamic lighting with glowing or neon accents
+- Suitable for a tech/AI blog thumbnail that attracts attention
 
 **Content Guidelines:**
 - Reflect the main idea of the article header: "{header}"
 - Draw inspiration from the article description: "{description}"
-- Represent the core concept with **simple, clear visual metaphors**
-- Integrate tech or AI elements **minimally and elegantly**
-- Use **clean, uncluttered compositions** with clear focal points
-- Avoid complexity - viewers should understand the concept immediately
-
-**Design Principles:**
-- **Minimal and Clean:** Use only essential elements to convey the message
-- **Eye-catching:** Simple but visually striking design that grabs attention
-- **Not Complex:** Avoid puzzle-like complexity or overwhelming details
-- **UI-focused:** Clean interface elements, icons, or simple visual metaphors
-- **Informative:** Clearly communicates the article topic without confusion
-- **Elegant:** Professional, modern aesthetic with good visual balance
+- Represent the core concept with creative, symbolic, or metaphorical visuals
+- Integrate futuristic, AI, or technology-inspired elements naturally
+- Use imaginative environments, abstract shapes, or surreal compositions
+- Avoid photorealism or strict realism; emphasize artistic creativity
 
 **Brand Integration & News Authenticity:**
 - Include relevant brand logos, devices, or UI elements that are specifically mentioned in the article content
@@ -39,9 +31,9 @@ Create a high-quality, clean image prompt for a blog post thumbnail to be featur
 
 **Technical Specifications:**
 - 16:9 aspect ratio (blog-friendly)
-- **Clean, minimal color palette** with strategic use of contrast
-- **Balanced composition** with clear focal points and plenty of white space
+- Bold colors and contrasted lighting
+- Balanced composition with clear focal points
 - Incorporate the brand color `#4379f2` subtly as a small accent or highlight
 
 **Output Format:**
-Provide a detailed, descriptive image prompt that would guide an AI image generation model to produce a visually striking, clean, and minimal illustration suitable for a blog thumbnail.
+Provide a detailed, descriptive image prompt that would guide an AI image generation model to produce a visually striking, creative, and slightly stylized illustration suitable for a blog thumbnail.
